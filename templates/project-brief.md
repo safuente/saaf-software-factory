@@ -1,7 +1,7 @@
 ---
 id: PRJ-000                 # unique project id
 name: project-name          # kebab-case, used for folder and repo names
-repo: ../project-name       # path to the project's code repository; may not exist yet before F00
+repo: workspaces/project-name  # code repository, relative to the factory root; created by F00 if missing
 client: Client Name
 owner: name@company.com     # human accountable for answering discovery questions
 ---

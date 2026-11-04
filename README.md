@@ -101,9 +101,11 @@ Paths in Reads and Writes are relative to the project folder `projects/<id>-<nam
         ├── specs/
         ├── builds/
         └── reviews/
+workspaces/                  # git-ignored: one code repository per project
+└── <name>/
 ```
 
-The code of each project lives in its own repository, at the path given by `repo:` in its `brief.md`. This repository holds the factory and the records of what it produced.
+The code of each project lives in its own git repository under `workspaces/<name>/`, set by `repo:` in its `brief.md`. `workspaces/` is inside this folder so Claude Code can write to it without extra permissions, and git-ignored so project code never ends up in the factory's history. This repository holds the factory and the records of what it produced.
 
 ## Supported stacks
 
@@ -138,7 +140,9 @@ Run these inside Claude Code, from the root of this repository.
 /factory new PRJ-001 customer-portal
 ```
 
-Creates `projects/PRJ-001-customer-portal/` with a `brief.md` from the template. Fill in the brief, set `repo:` to where the code repository should live, and put supporting material in `context/`: meeting notes, API contracts (OpenAPI, schemas), design links. Prefer text over PDFs.
+Creates `projects/PRJ-001-customer-portal/` with a `brief.md` from the template, with `repo: workspaces/customer-portal`. Fill in the brief and put supporting material in `context/`: meeting notes, API contracts (OpenAPI, schemas), design links. Prefer text over PDFs.
+
+For a new project, `F00` creates the repository. For an existing codebase, clone it into `workspaces/customer-portal` before planning.
 
 ### 2. Plan it
 

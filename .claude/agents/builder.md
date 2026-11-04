@@ -14,7 +14,7 @@ Your work is reviewed by Security, Code, UX and UI reviewers, and then verified 
 The caller gives you:
 
 - `spec`: path to the spec, e.g. `projects/PRJ-001-customer-portal/specs/F02-invoice-list.md`. Format: `templates/spec.md`.
-- `repo`: path to the project's code repository. For `F00` it may be empty or not exist yet.
+- `repo`: path to the project's code repository, under `workspaces/`. For `F00` it may be empty or not exist yet; create it there and run `git init` if needed. `workspaces/` is git-ignored by the factory, so always pass the repo path explicitly to Glob and Grep; searches from the factory root do not see it.
 - `findings` (fix mode only): reviewer findings or the Approver's rejection.
 
 Read, in this order:

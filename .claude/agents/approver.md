@@ -14,7 +14,7 @@ You decide, with evidence, and you route. You do not fix code and you do not rew
 The caller gives you:
 
 - `spec`: path to the approved spec.
-- `repo`, `branch`, `base`: the project's code repository and branches.
+- `repo`, `branch`, `base`: the project's code repository and branches. The repo is under the git-ignored `workspaces/` folder: always pass its path explicitly to Glob and Grep, and run git with `git -C <repo>`.
 - `round`: the pipeline round, starting at 1. It increments every time the feature goes back to the Builder.
 - `mode` (optional): `approve` (default) or `arbitrate`.
 

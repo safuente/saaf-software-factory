@@ -34,15 +34,15 @@ Every prompt you send an agent contains only paths and parameters, never file co
 ## Resolve paths
 
 - **Project folder**: `projects/<id>-<name>/`. Accept the full path, the id (`PRJ-001`) or the name.
-- **Code repository**: the `repo` field in the project's `brief.md` frontmatter. If it is missing, ask the user and stop.
+- **Code repository**: the `repo` field in the project's `brief.md` frontmatter, relative to the factory root. It must be inside `workspaces/`, which is git-ignored by the factory and inside Claude Code's working directory. If it is missing or points elsewhere, ask the user and stop.
 - **Feature**: accept a path to a feature entry, or `<project>/<feature-id>` (e.g. `PRJ-001/F02`). Feature entries are in `plan/backlog/` or, for standalone requests, `requests/` inside the project folder.
 - **Slug**: the feature entry's file name without the id prefix and extension. Spec, build report and review folder all use `<id>-<slug>`.
 - **Base branch**: the repo's default branch (`git -C <repo> symbolic-ref --short refs/remotes/origin/HEAD`, or `main` if there is no remote).
 
 ## `/factory new <id> <name>`
 
-1. Create `projects/<id>-<name>/` with `brief.md` copied from `templates/project-brief.md` (fill in `id` and `name`), and an empty `context/` folder.
-2. Stop and tell the user to fill in `brief.md`, add supporting material to `context/`, and run `/factory plan <id>`.
+1. Create `projects/<id>-<name>/` with `brief.md` copied from `templates/project-brief.md` (fill in `id`, `name` and `repo: workspaces/<name>`), and an empty `context/` folder.
+2. Stop and tell the user to fill in `brief.md`, add supporting material to `context/`, and run `/factory plan <id>`. If the project already has code, tell them to clone it into `workspaces/<name>` first.
 
 ## `/factory plan <project>`
 

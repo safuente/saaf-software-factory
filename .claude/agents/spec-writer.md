@@ -21,7 +21,7 @@ Read, in this order:
 4. Every ADR listed in the entry's `adrs` field, under `plan/adr/`. Skim the other ADRs to see if any apply. Then `policies/conventions.md` for API, data and security conventions; project ADRs override it where they differ.
 5. Everything referenced in the entry's Context section.
 6. Specs of the features in `depends_on`, under the project's `specs/`, so your interfaces are consistent with theirs.
-7. If the project already has code, the parts relevant to this feature (read-only), so the spec matches what exists: current endpoints, entities, screens.
+7. If the project already has code (the brief's `repo` path), the parts relevant to this feature (read-only), so the spec matches what exists: current endpoints, entities, screens. The repo is under the git-ignored `workspaces/` folder: always pass its path explicitly to Glob and Grep.
 
 **Write only inside the project's `specs/` folder.** Never modify the entry, the brief, ADRs or code.
 

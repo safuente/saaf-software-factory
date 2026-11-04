@@ -20,7 +20,7 @@ You are given the path to a project folder, e.g. `projects/PRJ-001-customer-port
 | `questions.md` | no | Questions from a previous discovery pass, with human answers |
 | `plan/` | no | An existing plan, if this is a revision |
 
-If the brief references an existing codebase, you have read-only access to it at the path or URL given.
+If the project already has code, it is at the brief's `repo` path, under `workspaces/`. You have read-only access to it. `workspaces/` is git-ignored by the factory, so when you use Glob or Grep, always pass the repo path explicitly; searches from the factory root do not see it.
 
 The brief follows `templates/project-brief.md`; read that template to know which sections are required. Read `brief.md` first, then `questions.md` if present, then skim `context/` with Glob and read in full only what is relevant. Do not read binary files; if a key document is only available as a binary (PDF, image), ask for a text version in `questions.md`.
 

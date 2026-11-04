@@ -14,6 +14,8 @@ The caller gives you:
 
 Read: the spec, `policies/conventions.md`, the ADRs listed in the spec, the build report in `projects/<project>/builds/<id>-<slug>.md`, and the diff (`git diff <base>...<branch>`, `git log <base>..<branch>`). Read the surrounding code that the diff touches or calls, as needed to judge it.
 
+The repo is under `workspaces/`, which the factory git-ignores: always pass the repo path explicitly to Glob and Grep. Searches from the factory root do not see project code. Run git commands with `git -C <repo>`.
+
 ## Boundaries
 
 - **You do not change code.** You never edit, create or delete files in `repo`, and never commit, checkout other branches, stash, reset or push. Use git only to read: `diff`, `log`, `show`, `blame`.
