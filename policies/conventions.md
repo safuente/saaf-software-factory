@@ -50,6 +50,7 @@ One repository per project. Monorepo layout when backend and frontend coexist:
 │   └── adr/            # copied from the project plan
 ├── .ci/ or CI config   # per the CI platform in use
 ├── docker-compose.yml  # local development: app + PostgreSQL (+ Redis)
+├── Makefile            # standard targets, see "Local environment"
 ├── CLAUDE.md           # project-specific notes for agents
 └── README.md           # how to run, test and deploy locally
 ```
@@ -89,6 +90,27 @@ frontend/src/
 ├── shared/             # reusable UI components, utilities, API client
 └── ...                 # framework-required folders (pages/ for Astro, app/ for Angular)
 ```
+
+### Local environment
+
+The factory runs several features of several projects at the same time on one machine, each in its own git worktree with its own running environment. Every project must support that:
+
+- **Host ports come from environment variables** in `docker-compose.yml`, with defaults: `${APP_PORT:-8000}` (backend), `${FRONTEND_PORT:-3000}`, `${DB_PORT:-5432}`, `${REDIS_PORT:-6379}`. No hardcoded host ports.
+- **No `container_name`** in `docker-compose.yml`. It breaks isolation by `COMPOSE_PROJECT_NAME`.
+- **`.env` drives everything.** Docker compose reads it automatically, including `COMPOSE_PROJECT_NAME`, and the `Makefile` starts with `-include .env` and `export`. The factory writes these variables into `.env` for each worktree: `COMPOSE_PROJECT_NAME`, `APP_PORT`, `FRONTEND_PORT`, `DB_PORT`, `REDIS_PORT`, `APP_URL`, `API_URL`. Code and tests must read ports and URLs from them, never assume defaults.
+- **Tests connect to the database of the same compose project** through `DB_PORT`, so two worktrees never share a database.
+
+Standard `Makefile` targets. The factory calls these, never stack-specific commands:
+
+| Target | Does | Requirements |
+|---|---|---|
+| `install` | Install dependencies from lock files | Idempotent |
+| `up` | Start the app and its dependencies in the background | Returns only when every service is healthy (`docker compose up -d --wait`) |
+| `down` | Stop and remove containers **and volumes** | Leaves nothing running for this `COMPOSE_PROJECT_NAME` |
+| `seed` | Load local review data | Idempotent. One test user per role, with credentials listed in `README.md`. Data to reach every state described in the specs' UI sections: empty, many items, errors, no permission. Local only, never in production migrations |
+| `test` | Full test suite with coverage | Needs `up` |
+| `e2e` | Playwright tests against `APP_URL` | Needs `up`; only for projects with a frontend |
+| `check` | Every local CI stage: lint, format check, type check, `test`, build | Exits non-zero if any stage fails |
 
 ## 3. Tooling
 
@@ -149,10 +171,14 @@ Every project's CI runs these stages on every pull request. A stage failing bloc
 6. **Security scan**: SAST and dependency vulnerability scan.
 7. **End-to-end tests** (Playwright) when the project has a frontend.
 
+Locally, `make check` runs stages 1 to 6 and `make e2e` runs stage 7.
+
 ## 8. Definition of done (per feature)
 
 - All acceptance criteria in the spec are covered by automated tests that reference them by id (e.g. test name or docstring contains `AC-3`).
 - CI green.
+- Branch rebased on the base branch; migrations apply cleanly after the base's migrations.
 - Migrations included and reversible.
+- If the feature touches the frontend: `make seed` reaches every state in the spec's UI section.
 - `README.md` updated if setup, configuration or commands changed.
 - No TODOs without a linked backlog item.

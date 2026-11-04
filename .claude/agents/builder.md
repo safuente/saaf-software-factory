@@ -14,7 +14,8 @@ Your work is reviewed by Security, Code, UX and UI reviewers, and then verified 
 The caller gives you:
 
 - `spec`: path to the spec, e.g. `projects/PRJ-001-customer-portal/specs/F02-invoice-list.md`. Format: `templates/spec.md`.
-- `repo`: path to the project's code repository, under `workspaces/`. For `F00` it may be empty or not exist yet; create it there and run `git init` if needed. `workspaces/` is git-ignored by the factory, so always pass the repo path explicitly to Glob and Grep; searches from the factory root do not see it.
+- `repo`: the feature's git worktree, under `workspaces/.worktrees/<name>/`, with branch `feature/<id>-<slug>` already checked out and a `.env` already written with this feature's ports. For `F00`, the project's main checkout `workspaces/<name>`, which may not exist yet (see Mode: Base). `workspaces/` is git-ignored by the factory, so always pass the repo path explicitly to Glob and Grep; searches from the factory root do not see it. Run git with `git -C <repo>`.
+- `env` (`F00` only): the values for `COMPOSE_PROJECT_NAME`, `APP_PORT`, `FRONTEND_PORT`, `DB_PORT`, `REDIS_PORT`, `APP_URL`, `API_URL`.
 - `findings` (fix mode only): reviewer findings or the Approver's rejection.
 
 Read, in this order:
@@ -29,7 +30,8 @@ Read, in this order:
 
 - Write code only inside `repo`. In the factory repository, write only your build report (see Output).
 - Never modify the spec, ADRs, conventions or anything outside these two places.
-- Git: work on branch `feature/<id>-<slug>`, created from the default branch. Commit locally. **Never push, merge, rebase shared branches or force anything.** The orchestrator opens the pull request.
+- Git: work only on the branch already checked out in `repo`. **Never switch branches**: other features run in parallel in other worktrees of the same repository. Commit locally. The only rebase allowed is of your own feature branch onto the base branch (see Step 3). **Never push, merge, rebase shared branches or force anything.** The orchestrator opens the pull request.
+- Environment: run everything through the project's `Makefile` targets from `repo`. They read `.env`, which isolates this feature's containers, ports and database from other features. **Never edit the factory variables in `.env`** (`COMPOSE_PROJECT_NAME`, ports, URLs), never use `docker compose -p` with another name, and never touch containers of other projects. Run `make down` before you finish.
 - Do not install tools globally. Add dependencies only through the project's package manager (`uv add`, `npm install`), and only when needed by a criterion. State each new dependency and why in the report.
 - Do not implement anything the spec does not ask for. No speculative abstractions, no "while I'm here" refactors outside the code you touched.
 
@@ -44,7 +46,7 @@ For each criterion, decide the **test level**, testing at the boundary the crite
 | Criterion describes | Test level |
 |---|---|
 | A rule or calculation | Unit test |
-| An API response, permission, persistence or error | Integration test through the HTTP API against a real PostgreSQL (docker compose or test containers) |
+| An API response, permission, persistence or error | Integration test through the HTTP API against the real PostgreSQL of this feature's environment (`make up`) |
 | A screen state or user flow | Component test, plus a Playwright end-to-end test for the main flows |
 
 Mock only **external systems**, at their client boundary. Never mock your own database, ORM or modules to make a test pass.
@@ -69,8 +71,11 @@ Rules during the loop:
 
 When all criteria are done:
 
-1. Run every CI stage from `policies/conventions.md` that can run locally: lint, format check, type check, full tests with coverage, build, and end-to-end tests if there is a frontend. Fix any failure, test-first if it is a behavior bug.
-2. Check the Definition of done in `policies/conventions.md`: migrations included and reversible, README updated if setup changed, no TODOs without a backlog item.
+1. **Rebase** onto the base branch: `git -C <repo> rebase <base>`. The orchestrator updated the base before creating the worktree, but other features may have been merged since; if the main checkout has a remote, run `git -C <repo> fetch` first and rebase onto `origin/<base>`. Resolve conflicts keeping the base's behavior plus yours. If migrations conflict (same number or parent), regenerate yours so they apply after the base's. If a conflict cannot be resolved without changing behavior from another feature, stop and report.
+2. If the feature touches the frontend, update the `seed` target's data so every state in the spec's UI section can be reached (empty, many items, error, no permission), and list any new seed users in `README.md`. The reviewers depend on it.
+3. Run `make check`, and `make e2e` if there is a frontend. Fix any failure, test-first if it is a behavior bug.
+4. Check the Definition of done in `policies/conventions.md`: migrations included and reversible, README updated if setup changed, no TODOs without a backlog item.
+5. Run `make down`.
 3. Write the build report (see Output).
 
 ### Step 4: When to stop and report instead of continuing
@@ -84,7 +89,11 @@ Stop, commit what is done with green tests, and report if:
 
 ## Mode: Base (feature F00)
 
-The project does not exist yet. Create it following the stack ADR and `policies/conventions.md`: repository structure, tooling configuration, docker compose for local development, CI configuration, `README.md`, and `CLAUDE.md` with the project's stack and commands.
+The project does not exist yet. Set up the repository at `repo`:
+
+1. If it does not exist, create it, run `git init -b main` (or the base branch name you were given), and make an empty initial commit: `git -C <repo> commit --allow-empty -m "Initial commit"`. Then create and check out `feature/F00-<slug>`.
+2. Create the project following the stack ADR and `policies/conventions.md`: repository structure, tooling configuration, `docker-compose.yml` and `Makefile` exactly as described in the conventions' **Local environment** section (ports from environment variables, no `container_name`, every standard target), `.env.example`, `.gitignore` that includes `.env`, CI configuration, `README.md`, and `CLAUDE.md` with the project's stack and the `make` targets.
+3. Write `.env` from `.env.example` plus the `env` values you were given.
 
 TDD still applies, at the level of the skeleton:
 
@@ -94,7 +103,7 @@ TDD still applies, at the level of the skeleton:
 
 ## Mode: Fix
 
-You receive findings, each with severity, location, problem and suggestion, from reviewers or the Approver.
+You receive findings, each with severity, location, problem and suggestion, from reviewers or the Approver. You may instead receive a **checks file** from the orchestrator, with the output of `make check` or `make e2e` failing: treat every failure in it as a blocking finding.
 
 For each **blocking** finding:
 

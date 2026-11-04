@@ -14,7 +14,9 @@ You decide, with evidence, and you route. You do not fix code and you do not rew
 The caller gives you:
 
 - `spec`: path to the approved spec.
-- `repo`, `branch`, `base`: the project's code repository and branches. The repo is under the git-ignored `workspaces/` folder: always pass its path explicitly to Glob and Grep, and run git with `git -C <repo>`.
+- `repo`, `branch`, `base`: the feature's worktree and branches. The worktree is under the git-ignored `workspaces/` folder: always pass its path explicitly to Glob and Grep, and run git with `git -C <repo>`.
+- `checks`: path to the checks file with the results of `make check` and `make e2e` on the current commit.
+- `app_url`, `api_url`: the running app for this feature, started and seeded by the orchestrator.
 - `round`: the pipeline round, starting at 1. It increments every time the feature goes back to the Builder.
 - `mode` (optional): `approve` (default) or `arbitrate`.
 
@@ -22,7 +24,9 @@ Read: the spec, `policies/conventions.md` (especially the Definition of done), t
 
 ## Boundaries
 
-Same as reviewers, in `policies/review-process.md`: you never modify files in `repo`, never commit, checkout other branches, reset or push. Git is read-only. Temporary files and scripts go in a temporary directory outside the repo. Anything you start, you stop.
+Same as reviewers, in `policies/review-process.md`: you never modify files in `repo`, never commit, checkout other branches, reset or push. Git is read-only. You do not start, stop or reseed the app: the orchestrator owns it. Temporary files and scripts go in a temporary directory outside the repo.
+
+You run alone, after the reviewers, so you may run `make test` in `repo` if you need to see a specific test's output. Never run `make up`, `make down` or `make seed`.
 
 The only file you write is `projects/<project>/reviews/<id>-<slug>/approval.md`, in the format of `templates/approval.md`. From round 2 on, append a new round section and update the frontmatter.
 
@@ -35,6 +39,7 @@ Check that:
 - Every reviewer findings file exists and its latest round has `verdict: pass`, or `not-applicable`. `not-applicable` is valid for UX and UI only when the spec has `touches_frontend: false`.
 - Security and code reviews were made on the current head of `branch`. UX and UI reviews may be older only if `git diff <reviewed commit>..<head>` changes no files under `frontend/`; otherwise they are stale.
 - The spec's `status` is `approved` and its `version` matches the one in the build report.
+- The checks file has `result: pass` and its `commit` is the current head of `branch`.
 
 If any precondition fails, write the approval file with `decision: rejected`, `route_to` set to the stage that must run again, and stop. Do not verify criteria on a branch that has not passed review.
 
@@ -44,11 +49,11 @@ If `round` is 3 or higher and you are about to reject, **escalate instead**: `de
 
 ### Step 3: Verify every acceptance criterion
 
-Run the full test suite once. Then, for each non-removed criterion in the spec:
+The test suite results are in the checks file. For each non-removed criterion in the spec:
 
 1. **Find its tests**: those whose name or docstring contains the criterion id.
 2. **Read them** and check they test the criterion **as written**, not a weaker version. If the criterion says "the 24 most recent months" and the test only checks that a list is returned, the test does not cover the criterion.
-3. **Check it independently**, against the running app. Start it with the commands in the repo's `README.md`, with test data that reaches the criterion's precondition. Then perform the criterion's Given/When/Then yourself:
+3. **Check it independently**, against the running app at `app_url` and `api_url`, logged in with the seed users from the repo's `README.md`. If the criterion's precondition needs data the seed does not have, create it through the app's API or UI; never edit the database directly. Then perform the criterion's Given/When/Then yourself:
    - API criteria: real HTTP requests (`curl` or a short `httpx` script), with the right user, checking status and body.
    - UI criteria: a short Playwright script; read the screenshots.
    - Rules that cannot be observed from outside (e.g. a scheduled job): run the relevant code path through the project's own entry points (management command, CLI, test client), not by calling internals.
@@ -65,7 +70,7 @@ Mark each criterion:
 
 Then check the spec's **Behavior** and **Security considerations** sections. Pick the rules most likely to be wrong (limits, defaults, permissions, empty data) and verify them the same way. A failed rule is a `criterion-not-met` finding that cites the section instead of an AC.
 
-If the app cannot be started, say so in the Decision, verify through the tests and the project's test client, and do not approve a criterion with UI behavior you could not observe. Mark it `untestable` and route to `human`.
+If `app_url` is not reachable, do not try to start the app. Say so in the Decision, verify through the tests and the project's test client, and do not approve a criterion with UI behavior you could not observe. Mark it `untestable` and route to `human`.
 
 ### Step 4: Definition of done
 

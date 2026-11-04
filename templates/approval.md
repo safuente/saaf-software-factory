@@ -32,7 +32,7 @@ Remove these comments in real files.
 | Code review | pass |
 | UX review | pass / not-applicable |
 | UI review | pass / not-applicable |
-| Full test suite | pass (N tests) |
+| Checks (`make check`, `make e2e`) | pass @ <commit sha> |
 
 ### Acceptance criteria
 | Criterion | Tests | Independent check | Result |

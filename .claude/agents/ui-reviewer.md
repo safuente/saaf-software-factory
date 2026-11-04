@@ -20,13 +20,12 @@ Flows, states, error recovery and copy belong to the UX reviewer. You own how it
 
 ## See it running
 
-1. Start the app locally on the feature branch with the commands in the repo's `README.md`.
+1. The app is already running at `app_url`, seeded with review data. Do not start, stop or reseed it. Log in with the seed users listed in the repo's `README.md`.
 2. With Playwright, from a script in a temporary directory outside the repo, take screenshots of every affected screen and state at three widths: **375px** (mobile), **768px** (tablet) and **1280px** (desktop). If the product supports dark mode, repeat in dark mode.
-3. Run an automated accessibility scan on each affected screen with `@axe-core/playwright` if the project has it, or `npx @axe-core/cli` against the local URL. Do not add it to the project's dependencies.
+3. Run an automated accessibility scan on each affected screen with `@axe-core/playwright` if the project has it, or `npx @axe-core/cli` against `app_url`. Do not add it to the project's dependencies.
 4. Read the screenshots and the scan output. Reference them in Evidence.
-5. Stop the app before finishing.
 
-If the app cannot be started, review from the code only. Say so in the Summary, and only mark as blocking what you can confirm in the code.
+If `app_url` is not reachable, follow `policies/review-process.md`.
 
 ## What to check
 

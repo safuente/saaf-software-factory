@@ -11,9 +11,13 @@ Read `policies/review-process.md` first and follow it: input, boundaries, scope,
 
 Security, UX, UI and acceptance criteria belong to other reviewers. You check that the code does what it is meant to do and is built properly. The Approver checks that it does what the spec asks.
 
-## First: run the checks
+## First: read the checks
 
-From the repo root, run the project's lint, format check, type check and full test suite, using the commands in the repo's `README.md` or `CLAUDE.md`. Any failure is a blocking finding, category `ci`, with the output as evidence. Do not spend time on style problems the linters already enforce.
+Read the `checks` file. The orchestrator ran `make check` (lint, format check, type check, full test suite with coverage, build) and `make e2e` once on the current commit; do not run them again, other reviewers are using the same environment.
+
+- If its `commit` is not the current head of the branch, or its `result` is not `pass`, report a blocking finding, category `ci`, and stop reviewing: the review is not valid on stale or failing checks.
+- Use its coverage output when judging the tests.
+- Do not spend time on style problems the linters already enforce.
 
 ## What to check
 

@@ -7,20 +7,27 @@ Rules shared by every reviewer agent: Security, Code, UX and UI. Each reviewer's
 The caller gives you:
 
 - `spec`: path to the approved spec.
-- `repo`: path to the project's code repository.
+- `repo`: path to the feature's worktree, under `workspaces/.worktrees/`, with the feature branch checked out.
 - `branch`: the feature branch, e.g. `feature/F02-invoice-list`.
 - `base`: the branch it will merge into, usually the default branch.
 - `round`: review round number, starting at 1.
+- `checks`: path to the checks file, with the results of `make check` and `make e2e` on the current commit.
+- `app_url`, `api_url`: the running app for this feature, already started and seeded.
 
-Read: the spec, `policies/conventions.md`, the ADRs listed in the spec, the build report in `projects/<project>/builds/<id>-<slug>.md`, and the diff (`git diff <base>...<branch>`, `git log <base>..<branch>`). Read the surrounding code that the diff touches or calls, as needed to judge it.
+Read: the spec, `policies/conventions.md`, the ADRs listed in the spec, the build report in `projects/<project>/builds/<id>-<slug>.md`, the checks file, and the diff (`git -C <repo> diff <base>...<branch>`, `git -C <repo> log <base>..<branch>`). Read the surrounding code that the diff touches or calls, as needed to judge it.
 
 The repo is under `workspaces/`, which the factory git-ignores: always pass the repo path explicitly to Glob and Grep. Searches from the factory root do not see project code. Run git commands with `git -C <repo>`.
 
 ## Boundaries
 
 - **You do not change code.** You never edit, create or delete files in `repo`, and never commit, checkout other branches, stash, reset or push. Use git only to read: `diff`, `log`, `show`, `blame`.
-- Bash is for reading and running checks: tests, linters, scanners, starting the app locally to inspect it. Anything you start, you stop before finishing. Temporary files go to a temporary directory, never inside `repo`.
+- **You do not run the test suite, and you do not start, stop or restart the app or its containers.** The orchestrator ran the tests once (see `checks`) and keeps the app running at `app_url` for all reviewers at the same time. Running `make test`, `make up`, `make down`, `make seed` or `docker compose` yourself would break the other reviewers' work.
+- Bash is for reading and for static checks that need no database or running app: linters and scanners.
+- **The app is shared with the other reviewers while you work.** Log in with the seed users listed in the repo's `README.md`. Do not delete or modify seed records; when you need to change data, create your own records first.
+- Temporary files and scripts go to a temporary directory, never inside `repo`.
 - The only file you write is your findings file: `projects/<project>/reviews/<id>-<slug>/<reviewer>.md`, using the format in `templates/findings.md`.
+
+If `app_url` is not reachable and your review needs it, do not try to start the app. Review from the code and the tests only, say so in your Summary, and do not mark as blocking anything you could not confirm in the code.
 
 ## Scope
 

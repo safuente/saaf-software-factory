@@ -21,10 +21,12 @@ flowchart TD
     spec --> gate2{{Human approves spec}}
     gate2 --> builder[Builder - TDD]
 
-    builder --> sec[Security reviewer]
-    builder --> code[Code reviewer]
-    builder --> ux[UX reviewer*]
-    builder --> ui[UI reviewer*]
+    builder --> checks[Checks: make check, make e2e]
+    checks -->|fail| builder
+    checks -->|pass: app up + seeded| sec[Security reviewer]
+    checks --> code[Code reviewer]
+    checks --> ux[UX reviewer*]
+    checks --> ui[UI reviewer*]
 
     sec & code & ux & ui --> check{Blocking findings?}
     check -->|yes, round < 3| builder
@@ -57,7 +59,8 @@ Bugs and improvements on a delivered project skip the Planner: write a feature e
 |---|---|---|---|---|
 | Planning | [planner](.claude/agents/planner.md) | Opus | `brief.md`, `context/` | `questions.md`, `plan/adr/`, `plan/backlog/`, `plan/README.md` |
 | Spec | [spec-writer](.claude/agents/spec-writer.md) | Opus | Feature entry, ADRs, existing code | `specs/<id>-<slug>.md` |
-| Build | [builder](.claude/agents/builder.md) | Opus | Approved spec, conventions | Code on `feature/<id>-<slug>`, `builds/<id>-<slug>.md` |
+| Build | [builder](.claude/agents/builder.md) | Opus | Approved spec, conventions | Code on `feature/<id>-<slug>` in the feature's worktree, `builds/<id>-<slug>.md` |
+| Checks | Orchestrator (`make check`, `make e2e`) | n/a | Feature worktree | `builds/<id>-<slug>.checks.md` |
 | Review | [security-reviewer](.claude/agents/security-reviewer.md) | Opus | Diff, spec | `reviews/<id>-<slug>/security.md` |
 | Review | [code-reviewer](.claude/agents/code-reviewer.md) | Sonnet | Diff, spec, git log | `reviews/<id>-<slug>/code.md` |
 | Review | [ux-reviewer](.claude/agents/ux-reviewer.md) | Sonnet | Running app, spec | `reviews/<id>-<slug>/ux.md` |
@@ -72,6 +75,7 @@ Paths in Reads and Writes are relative to the project folder `projects/<id>-<nam
 - **Reviewers are read-only.** Only the Builder changes code. Reviewers and the Approver write only their findings files.
 - **Blocking findings need evidence.** A finding blocks only if it has a concrete consequence and evidence someone else can check.
 - **Independent verification.** The Approver does not rely on the Builder's tests alone: it checks each criterion against the running app.
+- **One worktree and one environment per feature.** Each feature gets its own git worktree, branch, ports, containers and database, so features run in parallel without touching each other. The orchestrator runs the tests once and starts the app once per round; reviewers and the Approver use it but never start, stop or reseed it.
 - **Three rounds maximum.** After three fix rounds without convergence, the feature is escalated to a human.
 - **All state lives in files.** Any run can be stopped and resumed.
 
@@ -101,8 +105,12 @@ Paths in Reads and Writes are relative to the project folder `projects/<id>-<nam
         ├── specs/
         ├── builds/
         └── reviews/
-workspaces/                  # git-ignored: one code repository per project
-└── <name>/
+workspaces/                  # git-ignored
+├── <name>/                  # main checkout of each project, always on the base branch
+├── .worktrees/
+│   └── <name>/
+│       └── <id>-<slug>/     # one worktree per feature in progress
+└── .slots.md                # port slots assigned to features on this machine
 ```
 
 The code of each project lives in its own git repository under `workspaces/<name>/`, set by `repo:` in its `brief.md`. `workspaces/` is inside this folder so Claude Code can write to it without extra permissions, and git-ignored so project code never ends up in the factory's history. This repository holds the factory and the records of what it produced.
@@ -123,6 +131,7 @@ On the machine that runs the factory:
 |---|---|
 | [Claude Code](https://docs.claude.com/en/docs/claude-code) | Everything |
 | git | Builder, reviewers, Approver |
+| make | Orchestrator and Builder; every project exposes standard targets |
 | [GitHub CLI](https://cli.github.com/) (`gh`), authenticated | Opening pull requests |
 | Docker and docker compose | Running apps and PostgreSQL for tests and reviews |
 | [uv](https://docs.astral.sh/uv/) | Python projects |
@@ -162,7 +171,15 @@ The first run writes `questions.md`. Answer inline under each question and run t
 
 `F00` creates the project base: structure, tooling, CI, health endpoint. After that, each feature stops at the spec approval gate and before pushing. If it stops for questions or an escalation, answer where it tells you and run the same command again.
 
-Features with no dependency between them can run in parallel from separate Claude Code sessions.
+Features with no dependency between them can run in parallel, each from its own Claude Code session. Each one gets its own worktree under `workspaces/.worktrees/` and its own port slot, recorded in `workspaces/.slots.md`: slot `N` uses ports `8100+N` (backend), `3100+N` (frontend), `5500+N` (PostgreSQL) and `6400+N` (Redis). `F00` cannot run in parallel with anything: every other feature starts from it.
+
+### Clean up after merging
+
+```
+/factory cleanup PRJ-001
+```
+
+For every feature whose pull request is merged: stops its containers, removes its worktree and local branch, updates the main checkout and frees its slot. Worktrees with uncommitted changes are reported and left alone.
 
 ### 4. Check progress
 

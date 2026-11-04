@@ -22,12 +22,11 @@ Visual design, design system use, responsive layout and accessibility belong to 
 
 Review the running application, not only the code:
 
-1. Start the app locally on the feature branch with the commands in the repo's `README.md` (usually docker compose), with test data that lets you reach every state.
-2. Walk through the flow as the affected user, using Playwright from a script in a temporary directory, outside the repo. Take a screenshot of every screen and every state listed in the spec's UI section: loading, empty, error, success, no permission. Force states that are hard to reach, such as errors and slow loading, through test data or network interception in Playwright.
+1. The app is already running at `app_url`, seeded with review data. Do not start, stop or reseed it. Log in with the seed users listed in the repo's `README.md`; use the one whose role matches the spec's affected user.
+2. Walk through the flow as the affected user, using Playwright from a script in a temporary directory, outside the repo. Take a screenshot of every screen and every state listed in the spec's UI section: loading, empty, error, success, no permission. Force states that are hard to reach, such as errors and slow loading, with network interception in Playwright rather than by changing shared data.
 3. Read the screenshots. Reference them by path in Evidence.
-4. Stop the app before finishing.
 
-If the app cannot be started, review from the code and the end-to-end tests only. Say so in the Summary, and do not mark anything as blocking that you could not observe or confirm in the code.
+If a state cannot be reached because the seed data does not cover it, that is a blocking finding, category `states`: the Builder must add it to `make seed`. If `app_url` is not reachable, follow `policies/review-process.md`.
 
 ## What to check
 
