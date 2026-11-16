@@ -14,7 +14,18 @@ The caller gives you:
 - `checks`: path to the checks file, with the results of `make check` and `make e2e` on the current commit.
 - `app_url`, `api_url`: the running app for this feature, already started and seeded.
 
-Read: the spec, `policies/conventions.md`, the ADRs listed in the spec, the build report in `projects/<project>/builds/<id>-<slug>.md`, the checks file, and the diff (`git -C <repo> diff <base>...<branch>`, `git -C <repo> log <base>..<branch>`). Read the surrounding code that the diff touches or calls, as needed to judge it.
+Read: the spec, the sections of `policies/conventions.md` your own file names, the ADRs listed in the spec, the build report in `projects/<project>/builds/<id>-<slug>.md`, the checks file, and the diff. Read code as described in Context economy.
+
+## Context economy
+
+Everything you read stays in your context and is sent again on every later turn. Read what your review needs, in this order:
+
+1. **The shape of the change**: `git -C <repo> diff --stat <base>...<branch>` and `git -C <repo> log --oneline <base>..<branch>`.
+2. **The diff of the files in your domain.** Pass the paths: `git -C <repo> diff <base>...<branch> -- <paths>`. UX and UI read frontend files; Security reads entry points, auth, data access and dependency files; Code reads all of it. Skip lock files, generated files and snapshots, except for the dependency changes you check in lock files.
+3. **Surrounding code only when the diff calls it or is called by it**, found with Grep and read by line range (`offset` and `limit`), not whole files.
+4. **The checks file holds the test and lint results.** Do not reproduce them.
+
+Filter long command output (`| tail -40`, `| grep ...`). For scanners, read the summary and the findings at or above medium severity, not the full report.
 
 The repo is under `workspaces/`, which the factory git-ignores: always pass the repo path explicitly to Glob and Grep. Searches from the factory root do not see project code. Run git commands with `git -C <repo>`.
 
@@ -60,7 +71,7 @@ Every blocking finding needs evidence that someone else can check: the code exce
 - **Round 1**: full review of the diff.
 - **Round 2 and later**: the Builder has responded. Read the fix section of the build report.
   1. For each previous finding, record its status: resolved, unresolved, dispute accepted (the Builder's argument is right) or dispute rejected (it is not, and you say why).
-  2. Review the new commits since the previous round for new problems. Do not re-review unchanged code looking for new issues you missed before, unless they are blocking.
+  2. Review only what changed since your previous round: `git -C <repo> diff <previous reviewed sha>..<branch>`, taking the sha from the `reviewed` field of your findings file. Do not re-read the full diff. Do not re-review unchanged code looking for new issues you missed before, unless they are blocking.
 - Keep finding ids stable across rounds. New findings get the next free number.
 
 ## Verdict

@@ -108,9 +108,16 @@ Standard `Makefile` targets. The factory calls these, never stack-specific comma
 | `up` | Start the app and its dependencies in the background | Returns only when every service is healthy (`docker compose up -d --wait`) |
 | `down` | Stop and remove containers **and volumes** | Leaves nothing running for this `COMPOSE_PROJECT_NAME` |
 | `seed` | Load local review data | Idempotent. One test user per role, with credentials listed in `README.md`. Data to reach every state described in the specs' UI sections: empty, many items, errors, no permission. Local only, never in production migrations |
-| `test` | Full test suite with coverage | Needs `up` |
-| `e2e` | Playwright tests against `APP_URL` | Needs `up`; only for projects with a frontend |
-| `check` | Every local CI stage: lint, format check, type check, `test`, build | Exits non-zero if any stage fails |
+| `lint` | Lint, format check and type check | Needs no database or running app |
+| `test` | Full test suite with coverage. `make test T=<path or test id>` runs only those tests, without coverage | Needs `up` |
+| `e2e` | Playwright tests against `APP_URL`. `make e2e T=<spec file>` runs only that file | Needs `up`; only for projects with a frontend |
+| `check` | Every local CI stage: `lint`, `test`, build | Exits non-zero if any stage fails |
+
+**Quiet output.** Agents read everything a target prints, and every line printed stays in their context. So every target prints:
+
+- On success, one summary line per stage, e.g. `lint ok`, `412 passed in 38s, coverage 87%`.
+- On failure, only what is needed to fix it: the failing tests with their assertion and traceback, or the lint errors.
+- Never progress bars, dependency download logs or the passing tests one by one. Use the tools' quiet flags, e.g. `pytest -q --no-header -p no:cacheprovider`, `ruff --quiet`, `vitest --reporter=dot`, `playwright test --reporter=line`, `docker compose --progress quiet`.
 
 ## 3. Tooling
 

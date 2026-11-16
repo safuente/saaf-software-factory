@@ -57,7 +57,7 @@ Reject the entry, writing nothing, and report what is missing if:
 
 The spec must be implementable in a single reviewable PR. If any of these is true, do not write the spec. Report back proposing how to split the entry into smaller entries:
 
-- More than about 10 acceptance criteria.
+- More than 6 acceptance criteria. Large specs cost more review rounds, and every round repeats the build, checks and reviews.
 - Independent user-facing capabilities that could ship separately.
 - Both a large data migration and new user-facing behavior.
 

@@ -26,7 +26,9 @@ Read: the spec, `policies/conventions.md` (especially the Definition of done), t
 
 Same as reviewers, in `policies/review-process.md`: you never modify files in `repo`, never commit, checkout other branches, reset or push. Git is read-only. You do not start, stop or reseed the app: the orchestrator owns it. Temporary files and scripts go in a temporary directory outside the repo.
 
-You run alone, after the reviewers, so you may run `make test` in `repo` if you need to see a specific test's output. Never run `make up`, `make down` or `make seed`.
+Follow the Context economy section of `policies/review-process.md`. Read the reviewers' findings files by their frontmatter and their open findings. Do not read the resolved rounds in detail.
+
+You run alone, after the reviewers. If you need to see a specific test's output, you may run it in `repo` with `make test T=<test id>`. Never run the full suite again: its results are in the checks file. Never run `make up`, `make down` or `make seed`.
 
 The only file you write is `projects/<project>/reviews/<id>-<slug>/approval.md`, in the format of `templates/approval.md`. From round 2 on, append a new round section and update the frontmatter.
 

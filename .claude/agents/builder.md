@@ -35,6 +35,15 @@ Read, in this order:
 - Do not install tools globally. Add dependencies only through the project's package manager (`uv add`, `npm install`), and only when needed by a criterion. State each new dependency and why in the report.
 - Do not implement anything the spec does not ask for. No speculative abstractions, no "while I'm here" refactors outside the code you touched.
 
+## Context economy
+
+Everything you read and every line a command prints stays in your context and is sent again on every later turn. A build has many turns, so keep both small:
+
+- **Commands**: use the `make` targets, which print a summary when they pass (see "Quiet output" in the conventions). For any other command whose output may be long, filter it, e.g. `2>&1 | tail -40`, or `grep` for the lines you need. Never print whole log files, lock files or dependency trees. If a target is noisy, fix its flags in the `Makefile` once instead of reading the noise every time.
+- **Reading code**: find things with Grep and Glob first. Then read the relevant range of a file with `offset` and `limit`, not the whole file, unless it is short or you are about to rewrite most of it. Do not read a file again after you edit it: the edit tool already confirms the change.
+- **Specs and policies**: read the spec and the conventions once at the start. Afterwards, go back only to the section you need.
+- **Tests**: while working on a criterion, run only its tests. Run the full suite once per criterion and at Finish.
+
 ## Mode: Build
 
 ### Step 1: Plan the criteria
@@ -57,9 +66,10 @@ For each criterion, in order:
 
 1. **Red.** Write the test or tests for this criterion only. Put the criterion id in the test name or docstring, e.g. `test_ac3_non_admin_gets_403`. Run it and confirm it **fails for the expected reason**: an assertion about missing behavior, not a syntax error, a typo or broken setup. If it passes already, the behavior exists: note it in the report and move on.
 2. **Commit the failing test**: `test(<id>): AC-N <short description>`.
-3. **Green.** Write the minimum production code that makes the test pass. Run the test, then the **full test suite**. Everything must be green before you continue.
-4. **Refactor.** Clean up the code you just wrote (naming, duplication, structure) while keeping all tests green. Do not change behavior.
-5. **Commit**: `feat(<id>): AC-N <short description>`.
+3. **Green.** Write the minimum production code that makes the test pass. While iterating, run only this criterion's tests: `make test T=<test id>`.
+4. **Refactor.** Clean up the code you just wrote (naming, duplication, structure) while keeping the tests green. Do not change behavior.
+5. **Lint and full suite.** Run `make lint` and fix everything it reports in the code you touched. Then run the full suite once with `make test`. Everything must be green before you continue. Lint problems fixed here do not pile up into a review round later.
+6. **Commit**: `feat(<id>): AC-N <short description>`.
 
 Rules during the loop:
 
@@ -73,10 +83,10 @@ When all criteria are done:
 
 1. **Rebase** onto the base branch: `git -C <repo> rebase <base>`. The orchestrator updated the base before creating the worktree, but other features may have been merged since; if the main checkout has a remote, run `git -C <repo> fetch` first and rebase onto `origin/<base>`. Resolve conflicts keeping the base's behavior plus yours. If migrations conflict (same number or parent), regenerate yours so they apply after the base's. If a conflict cannot be resolved without changing behavior from another feature, stop and report.
 2. If the feature touches the frontend, update the `seed` target's data so every state in the spec's UI section can be reached (empty, many items, error, no permission), and list any new seed users in `README.md`. The reviewers depend on it.
-3. Run `make check`, and `make e2e` if there is a frontend. Fix any failure, test-first if it is a behavior bug.
+3. Run `make check`, and `make e2e` if there is a frontend. Fix any failure, test-first if it is a behavior bug. **Never hand off with a failing check**: the orchestrator runs the same checks next, and a failure costs a full fix round.
 4. Check the Definition of done in `policies/conventions.md`: migrations included and reversible, README updated if setup changed, no TODOs without a backlog item.
 5. Run `make down`.
-3. Write the build report (see Output).
+6. Write the build report (see Output).
 
 ### Step 4: When to stop and report instead of continuing
 
