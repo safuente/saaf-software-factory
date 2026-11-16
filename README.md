@@ -4,6 +4,8 @@ A software factory built on Claude Code agents. It takes a project brief, plans 
 
 Agents do the work between stages. Humans approve the plan, approve each spec, confirm each pull request, and merge.
 
+It also has an **autonomous mode** (`/factory auto`) that searches the web for a product idea, validates it, writes the brief, and builds its MVP locally with no human gates. See [Autonomous mode](#autonomous-mode).
+
 ## Flow
 
 ```mermaid
@@ -57,6 +59,8 @@ Bugs and improvements on a delivered project skip the Planner: write a feature e
 
 | Stage | Agent | Model | Reads | Writes |
 |---|---|---|---|---|
+| Ideas (autonomous only) | [scout](.claude/agents/scout.md) | Sonnet | The web | `runs/<run>/ideas.md` |
+| Validation (autonomous only) | [validator](.claude/agents/validator.md) | Opus | `ideas.md`, the web | `runs/<run>/validation.md`, `brief.md`, `context/research.md` |
 | Planning | [planner](.claude/agents/planner.md) | Opus | `brief.md`, `context/` | `questions.md`, `plan/adr/`, `plan/backlog/`, `plan/README.md` |
 | Spec | [spec-writer](.claude/agents/spec-writer.md) | Opus | Feature entry, ADRs, existing code | `specs/<id>-<slug>.md` |
 | Build | [builder](.claude/agents/builder.md) | Opus | Approved spec, conventions | Code on `feature/<id>-<slug>` in the feature's worktree, `builds/<id>-<slug>.md` |
@@ -66,6 +70,8 @@ Bugs and improvements on a delivered project skip the Planner: write a feature e
 | Review | [ux-reviewer](.claude/agents/ux-reviewer.md) | Sonnet | Running app, spec | `reviews/<id>-<slug>/ux.md` |
 | Review | [ui-reviewer](.claude/agents/ui-reviewer.md) | Sonnet | Running app, spec | `reviews/<id>-<slug>/ui.md` |
 | Approval | [approver](.claude/agents/approver.md) | Opus | Everything above, running app | `reviews/<id>-<slug>/approval.md` |
+| Launch: demo | [demo-recorder](.claude/agents/demo-recorder.md) | Sonnet | Running MVP, specs, research | `launch/demo/` |
+| Launch: landing | [landing-writer](.claude/agents/landing-writer.md) | Opus | Research, specs, demo assets | `launch/landing/` |
 
 Paths in Reads and Writes are relative to the project folder `projects/<id>-<name>/`, except code, which goes to the project's own repository.
 
@@ -104,7 +110,16 @@ Paths in Reads and Writes are relative to the project folder `projects/<id>-<nam
         ├── requests/        # hand-written feature entries for bugs and improvements
         ├── specs/
         ├── builds/
-        └── reviews/
+        ├── reviews/
+        └── launch/          # demo video and Carrd-ready landing page
+            ├── demo/
+            └── landing/
+runs/                        # one folder per autonomous run
+└── RUN-<date>-<n>/
+    ├── run.md               # state, budget and log
+    ├── ideas.md             # Scout output
+    ├── validation.md        # Validator output
+    └── report.md            # final report
 workspaces/                  # git-ignored
 ├── <name>/                  # main checkout of each project, always on the base branch
 ├── .worktrees/
@@ -136,7 +151,9 @@ On the machine that runs the factory:
 | Docker and docker compose | Running apps and PostgreSQL for tests and reviews |
 | [uv](https://docs.astral.sh/uv/) | Python projects |
 | Node.js and npm | Frontend projects, Playwright, axe |
-| Playwright browsers (`npx playwright install`) | UX and UI reviewers, Approver, end-to-end tests |
+| Playwright browsers (`npx playwright install`) | UX and UI reviewers, Approver, end-to-end tests, demo video |
+| ffmpeg (includes ffprobe) | Demo video export (MP4, voice-over mix, GIF, poster); without it the demo stays as silent WebM with no GIF |
+| Optional: `ELEVENLABS_API_KEY` | Only for `/factory launch <project> voice=elevenlabs` |
 | Optional: `pip-audit`, `semgrep`, `bandit` | Security reviewer; skipped and reported if missing |
 
 ## Usage
@@ -189,6 +206,31 @@ For every feature whose pull request is merged: stops its containers, removes it
 
 Shows every feature's stage, round, and who it is waiting on, and lists features ready to start.
 
+### 5. Demo video and landing page
+
+```
+/factory launch PRJ-001                     # local voice-over (default)
+/factory launch PRJ-001 voice=none          # captions only
+/factory launch PRJ-001 voice=elevenlabs    # ElevenLabs voice, needs ELEVENLABS_API_KEY
+```
+
+Prepares what you need to test the idea with real people, in `projects/PRJ-001-<name>/launch/`. Nothing is published.
+
+- **Demo video** (`demo/`): the Demo recorder writes a storyboard with narration, generates the voice-over, then scripts the main user flow with Playwright against the seeded app, pacing each scene to its narration. Output: a 45-90 second `demo.mp4` with voice-over and burned-in captions (so it works muted), `demo.vtt` and `demo.srt` subtitle files (for YouTube or Vimeo, and for translations), a short silent `demo.gif` for the hero section, `poster.png`, screenshots, and the storyboard in `script.md`. Narration and captions use the target users' language.
+
+  | `voice` | Engine | Leaves the machine |
+  |---|---|---|
+  | `local` (default) | [Piper](https://github.com/rhasspy/piper) neural text-to-speech, falling back to macOS `say` | No |
+  | `none` | Captions only | No |
+  | `elevenlabs` | ElevenLabs API; asks for confirmation first, never used by `/factory auto` | The narration text |
+- **Landing page** (`landing/`): the Landing writer turns the research and the built features into a page for one audience with one call to action (sign-up at a stated early access price). Carrd has no HTML import, so the output is:
+  - `carrd.md`: a section-by-section build guide, with the exact copy and the Carrd element and settings for each part, site metadata, form setup, what to measure, how the price was chosen, and a to-do list before publishing (privacy policy, contact, domain, video upload, analytics).
+  - `preview.html`: the same page as a self-contained HTML file, to review copy and layout in a browser before building it in Carrd.
+
+The copy never includes invented testimonials, user counts, logos or statistics, and only describes features that were built.
+
+`/factory auto` runs this automatically at the end of a run.
+
 ### Bugs and improvements after delivery
 
 Copy [templates/feature-entry.md](templates/feature-entry.md) to `projects/<project>/requests/REQ-0001-<slug>.md`, fill it in, and run:
@@ -196,6 +238,52 @@ Copy [templates/feature-entry.md](templates/feature-entry.md) to `projects/<proj
 ```
 /factory projects/<project>/requests/REQ-0001-<slug>.md
 ```
+
+## Autonomous mode
+
+```
+/factory auto
+/factory auto "tools for independent music teachers" max_features=6
+/factory auto resume RUN-2026-11-16-1
+```
+
+```mermaid
+flowchart LR
+    scout[Scout: web research, 5-10 ideas] --> validator[Validator: verify evidence, knockouts, score]
+    validator -->|none pass| scout2[Scout once more, excluding tried ideas]
+    validator -->|best idea| brief[brief.md + context/research.md]
+    brief --> planner[Planner, answers its own questions]
+    planner -->|plan fails checks| next[Next ranked idea, max 3]
+    planner -->|plan OK| features[Features one by one: normal pipeline, auto-approved specs]
+    features -->|approved| merge[Local merge into main]
+    features -->|blocked| skip[Skip it and its dependents]
+    merge --> final[Final check on main]
+    final --> report[report.md]
+```
+
+**How it differs from the normal flow:**
+
+| Normal gate | In autonomous mode |
+|---|---|
+| Brief written by a person | The Validator writes it for the best idea that survives |
+| Discovery questions | The Planner answers them from the research and the conventions |
+| Plan approval | Automatic if it fits the feature limit, uses the approved stack and needs no external services |
+| Spec questions and approval | The Spec Writer decides, marking each choice `Autonomous decision:`; the orchestrator approves |
+| Escalations | The feature is marked blocked, with everything that depends on it; the run continues |
+| Push, PR and merge | Local merge into the project's `main`; nothing leaves the machine |
+
+**Idea validation.** The Scout looks for people describing a problem themselves (forums, product reviews, unanswered "is there a tool for…" questions) and needs at least 3 sources per idea. The Validator tries to reject each idea: it opens every source, searches for competitors itself, and applies knockout criteria before scoring:
+
+- Knockouts: outside the factory stack, MVP larger than the feature limit, regulated or sensitive domain (health, finance, legal, children, sensitive data…), needs paid services or third-party accounts, cannot be shown locally with synthetic data, clone of an existing product.
+- Scores (1-5, weighted): problem severity ×3, willingness to pay ×3, audience size ×2, competition gap ×2. Passing needs 3.5 and no knockout; any score above 3 needs two sources the Validator opened.
+
+This is desk research. It filters out weak ideas; it cannot show that an idea will succeed. The report says so and recommends talking to real users before going further.
+
+**Guardrails.** Local only: no push, no remote repositories, no deploy, no accounts, no emails, no payments. Budget per run: `max_features` (8), `max_ideas` (3), `max_agents` (150) agent launches. When a limit is reached the run stops cleanly and writes its report.
+
+**Result.** `runs/<run>/report.md` with the selected idea and the strongest argument against it, the rejected ideas, the status of every feature, the final check, the launch kit (demo video and Carrd-ready landing page, see [step 5](#5-demo-video-and-landing-page)), the decisions taken without a human, and how to run the MVP.
+
+**Running it unattended.** Inside Claude Code, every permission prompt pauses the run. Allow `make`, `git`, `docker`, `uv`, `npm`/`npx` and the web tools in `.claude/settings.json` (and deny `git push` and `gh`) before starting a long run. For runs that must survive closing the editor, see the Agent SDK item under [What is missing](#status-and-what-is-missing).
 
 ## Human gates
 
@@ -226,7 +314,8 @@ The agents, templates, policies and orchestrator are written. **Nothing has been
 ### Later
 
 - [ ] **Intake validation agent.** A small Haiku agent that rejects incomplete entries before they reach the Spec Writer. Today the Spec Writer does this check itself, with a more expensive model.
-- [ ] **Unattended orchestrator.** Port `/factory` to the Claude Agent SDK so the pipeline can run from a ticket, a schedule or CI, without an interactive session. The agent definitions in `.claude/agents/` can be reused as they are.
+- [ ] **Unattended orchestrator.** Port `/factory` and especially `/factory auto` to the Claude Agent SDK, so a run survives closing the editor and can be started from a schedule or CI, with budget and routing enforced in code instead of in a prompt. The agent definitions in `.claude/agents/` can be reused as they are.
+- [ ] **Market validation step.** The autonomous mode validates ideas with desk research only. A later step could test demand for real (landing page, waitlist), which needs a budget, accounts and a human decision.
 - [ ] **Second-opinion reviewer from another provider.** For example, an OpenAI model as an extra code or security reviewer, to reduce blind spots shared by builder and reviewer. Requires the Agent SDK orchestrator.
 - [ ] **Scaffolds.** After 2 or 3 projects, extract a base project per stack from the best real one, so `F00` copies it instead of creating the base from scratch.
 - [ ] **Deploy and operations stage.** Today the pipeline ends at the pull request. Deployment, monitoring and turning incidents into feature entries are not covered.

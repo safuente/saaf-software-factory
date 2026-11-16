@@ -1,7 +1,7 @@
 ---
 name: factory
-description: Runs the software factory pipeline. `/factory new <id> <name>` creates a project folder, `/factory plan <project>` runs the Planner, `/factory <feature>` takes a feature from entry to an approved pull request (Spec Writer, Builder, checks, reviewers in parallel, Approver), `/factory status <project>` shows where every feature is, `/factory cleanup <project>` removes worktrees and environments of merged features.
-argument-hint: new <id> <name> | plan <project> | status <project> | cleanup <project> | <feature-entry-path or project/feature-id>
+description: Runs the software factory pipeline. `/factory auto [focus]` finds and validates a product idea and builds its MVP locally with no human gates, `/factory launch <project>` records a demo video and writes a landing page ready to build in Carrd, `/factory new <id> <name>` creates a project folder, `/factory plan <project>` runs the Planner, `/factory <feature>` takes a feature from entry to an approved pull request (Spec Writer, Builder, checks, reviewers in parallel, Approver), `/factory status <project>` shows where every feature is, `/factory cleanup <project>` removes worktrees and environments of merged features.
+argument-hint: auto [focus] [max_features=N] | auto resume <run> | launch <project> [voice=local|none|elevenlabs] | new <id> <name> | plan <project> | status <project> | cleanup <project> | <feature-entry-path or project/feature-id>
 disable-model-invocation: true
 ---
 
@@ -171,6 +171,190 @@ Launch `approver` with `spec`, `repo`, `branch`, `base`, the current round, `che
 1. Show the user the PR description from `approval.md`, the branch name and the number of rounds. Ask for confirmation to push the branch and open the pull request.
 2. On confirmation: `git -C <feature repo> push -u origin feature/<id>-<slug>`, then `gh pr create --base <base> --head feature/<id>-<slug> --title "<id>: <title>" --body-file <temporary file with the description>`, run from the feature repo.
 3. Show the PR link. The merge is done by a human. Tell the user to run `/factory cleanup <project>` after merging.
+
+## `/factory launch <project>`
+
+Prepares the material to test the product with real people: a demo video and a landing page ready to build in Carrd. Output in `projects/<p>/launch/`. Nothing is published or uploaded: building the page in Carrd and uploading the video are done by a human.
+
+| Agent | `subagent_type` | Writes |
+|---|---|---|
+| Demo video | `demo-recorder` | `launch/demo/`: `demo.mp4` with voice-over and burned-in captions, `demo.vtt`, `demo.srt`, `demo.gif`, `poster.png`, `screenshots/`, `script.md` |
+| Landing page | `landing-writer` | `launch/landing/`: `carrd.md`, `preview.html` |
+
+Preconditions: the main checkout exists, has no uncommitted changes, and at least one feature other than `F00` is merged into the base branch. If not, say what is missing and stop.
+
+1. **Environment.** Assign a slot to feature `launch` of this project (see Runtime slots). In the main checkout, create `.env` from `.env.example` if it does not exist, and set the slot's variables in it. Run `make down`, `make up`, `make seed`.
+2. **Demo.** Launch `demo-recorder` with `project`, `repo` (the main checkout), `app_url`, `api_url`, `out: projects/<p>/launch/demo/` and `voice` from the arguments (default `local`).
+   - `local`: local text-to-speech (Piper, falling back to macOS `say`). Nothing leaves the machine.
+   - `none`: captions only.
+   - `elevenlabs`: before launching the agent, check that `ELEVENLABS_API_KEY` is set (if not, tell the user and use `local`), and ask the user to confirm that the narration text will be sent to ElevenLabs and billed to their account. Without confirmation, use `local`.
+3. Run `make down` and remove the slot's row from `workspaces/.slots.md`.
+4. **Landing.** Launch `landing-writer` with `project` and `launch: projects/<p>/launch/`. It uses the demo assets, so it runs after the demo.
+5. Show the user: the video path and duration, the voice actually used, the headline, the early access price, the path of `preview.html` to open in a browser, and the human to-do list from `carrd.md`.
+
+If the demo fails, still run the landing writer: it falls back to screenshots, or to text only. Report what is missing.
+
+## `/factory auto [focus] [max_features=N]`
+
+Autonomous run: find a product idea, validate it, plan it and build its MVP **without human gates**, entirely on this machine. For this subcommand only, the "Human gates are mandatory" rule is replaced by the rules below. Every other general rule still applies.
+
+Before starting, tell the user in one line that the run only proceeds unattended if `make`, `git`, `docker` and the web tools are allowed in the permission settings; otherwise each permission prompt pauses it. Then start without waiting.
+
+### Guardrails
+
+- **Local only.** Never push, never use `gh`, never create remotes or repositories, never deploy, never register accounts or domains, never send emails or messages, never pay or sign up for anything. Only the Scout and the Validator use the web.
+- **Never wait for the user.** Every point where the normal pipeline asks or stops for a human is replaced as described below.
+- **Budget.** Defaults, overridable from the arguments:
+
+  | Limit | Default |
+  |---|---|
+  | `max_features` (MVP size, counting `F00`) | 8 |
+  | `max_ideas` (briefs written in one run) | 3 |
+  | `max_agents` (agent launches in one run) | 150 |
+  | Rounds per feature | 3, as in the normal pipeline |
+
+  Check the budget before every agent launch. When a limit is reached, launch nothing else, run `make down` where an environment is up, and go to step 7 (Report) with result `stopped by budget`.
+- **Keep your own context small.** Read frontmatter and the specific lines you need, never whole agent outputs.
+
+### Run folder
+
+Create `runs/RUN-<YYYY-MM-DD>-<n>/` (`n` = next free number for the day) with `run.md`:
+
+```markdown
+---
+run: RUN-2026-11-16-1
+status: running             # running | completed | stopped
+focus: <focus or "open">
+max_features: 8
+max_ideas: 3
+max_agents: 150
+agent_launches: 0
+ideas_attempted: 0
+project: none
+---
+# Run RUN-2026-11-16-1
+
+## Log
+| Time | Step | Result |
+|---|---|---|
+```
+
+Increment `agent_launches` before every agent launch. Append a log row after every agent and every decision. `/factory auto resume <run>` continues a run from this file and the files it points to.
+
+### Step 1: Scout
+
+Launch `scout` with `run`, `focus`, `max_features`.
+
+### Step 2: Validator
+
+The project id is the next free `PRJ-NNN` in `projects/`. Launch `validator` with `run`, `project_id` and `max_features`. Read `validation.md`'s frontmatter:
+
+- `selected` is an idea: increment `ideas_attempted`, set `project` in `run.md`, go to Step 3.
+- `selected: none`: if the Scout has run only once in this run, rename `ideas.md` to `ideas-1.md` and `validation.md` to `validation-1.md`, launch `scout` again with `exclude` listing every idea in `ideas-1.md`, then repeat Step 2. Otherwise go to Step 7 with result `no viable idea`.
+
+### Step 3: Plan
+
+Launch `planner` with the project folder, `autonomous: true` and `max_features`. Then check the plan yourself:
+
+- The Planner did not report `does not fit`.
+- `plan/backlog/` has at most `max_features` items with `milestone: v1`.
+- The stack ADR uses options from `policies/conventions.md`.
+- No ADR's Decision requires a paid service, a third-party account or real user data.
+
+If every check passes, replace the status line in `plan/README.md` with `Status: approved autonomously by the factory on <YYYY-MM-DD> (run <run>)` and go to Step 4.
+
+If any check fails, log the reason and drop the idea. If `ideas_attempted < max_ideas` and `validation.md`'s `ranking` has an idea not yet attempted, take the next free project id, launch `validator` with `idea` set to that idea, increment `ideas_attempted`, update `project` in `run.md`, and repeat Step 3. Otherwise go to Step 7 with result `no plan fits`.
+
+### Step 4: Build the MVP
+
+Take the backlog items with `milestone: v1` and run them **one at a time**, in dependency order (`F00` first). Running them sequentially means every feature starts from a base that already contains its dependencies, so local merges never conflict.
+
+For each feature, run Stages 0 to 6 of `/factory <feature>`, with these substitutions:
+
+| Normal pipeline | Autonomous run |
+|---|---|
+| Stage 0: a dependency is not approved | The feature is **blocked** |
+| Stage 1: launch `spec-writer` | Pass `autonomous: true` |
+| Stage 1: approval gate | If the spec is `draft` with no open questions, set `status: approved` yourself and log it. If the Spec Writer rejected the entry, the feature is **blocked** |
+| Stage 3: Builder stopped for a spec problem | `spec-writer` in revise mode with `autonomous: true`, approve it, `builder` in fix mode, increment the round |
+| Stage 3: Builder stopped for any other reason | **Blocked** |
+| Stage 4 or 5: round 3 reached | **Blocked** |
+| Stage 5: arbitration routes to `human` | **Blocked** |
+| Stage 6: `route_to: spec-writer` | Revise with `autonomous: true`, approve the spec yourself, then continue as in the normal pipeline |
+| Stage 6: `route_to: planner` or `human` | **Blocked** |
+| Stage 7: push and pull request | **Local merge**, below |
+
+**Blocked feature**: run `make down` in its feature repo, log the reason in `run.md`, and leave its worktree and slot in place for a human to inspect. Every feature that depends on it, directly or indirectly, is blocked too, with reason "depends on <id>". Continue with the next feature that is not blocked. If `F00` is blocked, nothing else can be built: go to Step 7.
+
+**Local merge** (instead of Stage 7):
+
+- For `F00`: `git -C <main checkout> checkout <base>`, then `git -C <main checkout> merge --no-ff feature/F00-<slug> -m "F00: <title>"`, then `git -C <main checkout> branch -d feature/F00-<slug>`. Keep its slot: the main checkout's `.env` uses it until Step 5.
+- For other features: `git -C <main checkout> merge --no-ff feature/<id>-<slug> -m "<id>: <title>"`, then `git -C <main checkout> worktree remove <worktree>`, `git -C <main checkout> branch -d feature/<id>-<slug>`, and remove its row from `workspaces/.slots.md`.
+- Log the merge commit in `run.md`.
+
+### Step 5: Final check
+
+In the main checkout, using the slot `F00` kept: `make down`, `make up`, `make check`, and `make e2e` if there is a frontend, then `make down`. Log each result. Remove `F00`'s row from `workspaces/.slots.md`. A failing final check does not undo merges; report it.
+
+### Step 5b: Launch kit
+
+If at least one feature other than `F00` was merged and the budget allows two more agent launches, run steps 1 to 4 of `/factory launch <project>` with `voice: local`. Never use `elevenlabs` in an autonomous run: it sends data to an external service and costs money. A failure here does not fail the run: log it and continue.
+
+### Step 6: Collect decisions
+
+Gather the decisions taken without a human, for the report: the `Answer (autonomous)` entries in `questions.md`, the `Autonomous decision:` lines in every spec, and specs approved by the factory. Count them and keep the 10 with the most impact (scope, security, data).
+
+### Step 7: Report
+
+Write `runs/<run>/report.md`:
+
+```markdown
+# Run report: <run>
+
+- Result: MVP complete | MVP partial | no viable idea | no plan fits | stopped by budget
+- Project: projects/<id>-<name> · Code: workspaces/<name>
+- Budget used: <agent_launches>/<max_agents> agents, <ideas_attempted>/<max_ideas> ideas
+
+## Idea
+<Selected idea, its score, why it was selected, and the Validator's strongest argument against it.>
+This idea is supported by desk research only. It has not been tested with real users.
+
+## Ideas rejected
+| Idea | Reason |
+|---|---|
+
+## Features
+| Feature | Title | Status | Rounds | Notes |
+|---|---|---|---|---|
+
+## Final check
+| Check | Result |
+|---|---|
+
+## Decisions to review
+<Count, then the 10 with the most impact, each with the file it is in.>
+
+## Launch kit
+- Demo video: projects/<p>/launch/demo/demo.mp4 (<duration>)
+- Landing page: build guide projects/<p>/launch/landing/carrd.md, preview projects/<p>/launch/landing/preview.html
+- Headline: "<headline>" · Early access price: <price>
+- Before publishing: <human to-do list from carrd.md>
+
+## How to run it
+cd workspaces/<name>
+make install && make up && make seed
+<APP_URL> · seed users are listed in workspaces/<name>/README.md
+
+## Next steps for a human
+- Decide, before publishing, how many sign-ups per visit would count as a signal.
+- Build the landing page in Carrd from carrd.md, complete its to-do list, and share it in the communities listed in context/research.md.
+- Talk to 5-10 people from the target user group, showing them the demo video.
+- Review the decisions above.
+- Unblock or drop the blocked features.
+- Create a remote repository and push, then plan deployment.
+```
+
+Set `status: completed` in `run.md` (`stopped` if a budget limit ended the run). Show the user the result line, the feature table and the report path.
 
 ## `/factory status <project>`
 

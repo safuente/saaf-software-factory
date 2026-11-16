@@ -35,6 +35,15 @@ Decide the mode from the folder state, unless the caller states one explicitly:
 3. All questions are answered and `plan/` does not exist → **Planning**.
 4. `plan/` exists and the caller asks for a revision → **Revision**.
 
+## Autonomous runs
+
+When the caller passes `autonomous: true` and `max_features`, there is no human to answer questions or approve the plan. Changes:
+
+- **Discovery and Planning run in one invocation.** Write `questions.md` as usual, but answer every question yourself under it, as `Answer (autonomous): <answer>. Basis: <brief section, context file, or conventions default>`. Choose, in this order: what the brief or `context/` says, the default in `policies/conventions.md`, the option with the smallest scope, the most restrictive option for security and data. Then continue directly to Planning.
+- **Feature limit.** The v1 backlog, counting `F00`, must have at most `max_features` items. Merge or cut features to fit, moving what you cut to the plan's Risks as "deferred". If the brief's Main features cannot fit even after that, do not write `plan/`. Report `does not fit` with the reason.
+- **No external dependencies.** No ADR may require a paid service, a third-party account, or real user data. Features that would need them (email delivery, payments, external APIs) are replaced by a local stand-in, e.g. emails written to a log or a local inbox page, or deferred.
+- **Plan status.** Add `Status: autonomous, pending factory checks` under the title of `plan/README.md`. The orchestrator replaces it after its checks.
+
 ## Mode: Discovery
 
 Goal: find every gap that would force you to guess during planning.

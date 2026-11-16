@@ -34,6 +34,16 @@ Decide from the state of `specs/<id>-<slug>.md`, unless the caller states a mode
 3. Spec exists with `status: needs-clarification` and unanswered questions → stop and report which are pending.
 4. Caller passes an Approver rejection that says the spec is wrong → **Revise**.
 
+## Autonomous runs
+
+When the caller passes `autonomous: true`, there is no human to answer questions or approve the spec. Changes:
+
+- **Never set `status: needs-clarification` and never stop for questions.** Resolve every gap yourself, choosing in this order: what the entry, brief, ADRs or `context/` say; the default in `policies/conventions.md`; the option with the smallest scope; the most restrictive option for security and data. Write each decision in Behavior, starting with `Autonomous decision:`, so a human can review them later.
+- **Too large (Step 2):** do not stop. Keep the criteria needed for the core of the Expected result and move the rest to Out of scope as `deferred (autonomous run)`.
+- **Entry rejected (Step 1):** still stop and report. The orchestrator marks the feature as blocked.
+- **Revise mode:** the same rules apply; never ask, even when the fix changes user-visible behavior. Record it in Changelog as an autonomous decision.
+- Leave `status: draft`. The orchestrator approves the spec.
+
 ## Mode: Write
 
 ### Step 1: Check the entry
