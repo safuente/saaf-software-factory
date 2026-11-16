@@ -114,6 +114,10 @@ Paths in Reads and Writes are relative to the project folder `projects/<id>-<nam
         └── launch/          # demo video and Carrd-ready landing page
             ├── demo/
             └── landing/
+examples/                    # finished example projects, versioned
+└── lesson-ledger/
+    ├── project/             # what the factory writes in projects/<id>-<name>/
+    └── output/              # the code it builds in workspaces/<name>/
 runs/                        # one folder per autonomous run
 └── RUN-<date>-<n>/
     ├── run.md               # state, budget and log
