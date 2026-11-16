@@ -31,6 +31,34 @@ Every prompt you send an agent contains only paths and parameters, never file co
 - **You own running environments.** Only you run `make up`, `make down`, `make seed`, `make check` and `make e2e` for a feature in the check, review and approval stages. Whenever you stop, for any reason, run `make down` in the feature's worktree first, unless the next step is an agent that needs the app.
 - Between steps, tell the user in one line what finished and what runs next.
 - When you stop, say why and what the user must do to continue.
+- **Record usage after every agent.** See Usage ledger.
+
+## Usage ledger
+
+Every time an agent returns, append one row to the ledger, before doing anything else:
+
+- **Where:** in the project's `usage.md` (`projects/<p>/usage.md`). If no project exists yet, as with the Scout and Validator in an autonomous run, write the row to `runs/<run>/usage.md` instead.
+- **Creating the file:** if the ledger does not exist, create it with this header:
+
+```markdown
+# Usage: <project or run>
+
+Tokens, tool uses and duration are the figures the Agent tool reports for each agent run, copied as reported. The orchestrator's own usage is not included.
+
+| Time | Command | Feature | Stage | Agent | Model | Round | Tokens | Tool uses | Duration |
+|---|---|---|---|---|---|---|---|---|---|
+| 2026-11-16 17:48 | feature | F01 | review | security-reviewer | opus | 1 | 182340 | 41 | 6m 12s |
+```
+
+Column values:
+
+- **Command:** `plan`, `feature`, `launch` or `auto <run>`.
+- **Feature:** `-` when the agent works on no single feature.
+- **Stage:** one of `discovery`, `planning`, `spec`, `build`, `fix`, `review`, `approval`, `arbitrate`, `scout`, `validate`, `demo`, `landing`.
+- **Model:** the `model` field in the agent's definition in `.claude/agents/<agent>.md`.
+- **Tokens, Tool uses and Duration:** if the Agent tool did not report a value, write `n/a`. Never estimate it.
+
+Agents launched in parallel each get their own row. An agent that fails or is stopped still gets a row; put `failed` in the Duration column if it has no duration.
 
 ## Resolve paths
 
@@ -171,6 +199,7 @@ Launch `approver` with `spec`, `repo`, `branch`, `base`, the current round, `che
 1. Show the user the PR description from `approval.md`, the branch name and the number of rounds. Ask for confirmation to push the branch and open the pull request.
 2. On confirmation: `git -C <feature repo> push -u origin feature/<id>-<slug>`, then `gh pr create --base <base> --head feature/<id>-<slug> --title "<id>: <title>" --body-file <temporary file with the description>`, run from the feature repo.
 3. Show the PR link. The merge is done by a human. Tell the user to run `/factory cleanup <project>` after merging.
+4. Show the feature's usage from `usage.md`: total tokens, the number of agent runs, and tokens per agent.
 
 ## `/factory launch <project>`
 
@@ -190,7 +219,7 @@ Preconditions: the main checkout exists, has no uncommitted changes, and at leas
    - `elevenlabs`: before launching the agent, check that `ELEVENLABS_API_KEY` is set (if not, tell the user and use `local`), and ask the user to confirm that the narration text will be sent to ElevenLabs and billed to their account. Without confirmation, use `local`.
 3. Run `make down` and remove the slot's row from `workspaces/.slots.md`.
 4. **Landing.** Launch `landing-writer` with `project` and `launch: projects/<p>/launch/`. It uses the demo assets, so it runs after the demo.
-5. Show the user: the video path and duration, the voice actually used, the headline, the early access price, the path of `preview.html` to open in a browser, and the human to-do list from `carrd.md`.
+5. Show the user: the video path and duration, the voice actually used, the headline, the early access price, the path of `preview.html` to open in a browser, the human to-do list from `carrd.md`, and the tokens used by the two agents according to `usage.md`.
 
 If the demo fails, still run the landing writer: it falls back to screenshots, or to text only. Report what is missing.
 
@@ -314,6 +343,7 @@ Write `runs/<run>/report.md`:
 - Result: MVP complete | MVP partial | no viable idea | no plan fits | stopped by budget
 - Project: projects/<id>-<name> · Code: workspaces/<name>
 - Budget used: <agent_launches>/<max_agents> agents, <ideas_attempted>/<max_ideas> ideas
+- Tokens: <total from runs/<run>/usage.md plus every usage.md of the projects attempted in this run, counting only rows whose Command is `auto <run>`>
 
 ## Idea
 <Selected idea, its score, why it was selected, and the Validator's strongest argument against it.>
@@ -330,6 +360,16 @@ This idea is supported by desk research only. It has not been tested with real u
 ## Final check
 | Check | Result |
 |---|---|
+
+## Usage
+| Phase | Agent runs | Tokens |
+|---|---|---|
+| Idea (scout, validator) | | |
+| Plan | | |
+| Features (one row per feature) | | |
+| Launch kit | | |
+| **Total** | | |
+<Agents with the most tokens, the feature that cost the most, and any `n/a` values.>
 
 ## Decisions to review
 <Count, then the 10 with the most impact, each with the file it is in.>
@@ -360,10 +400,10 @@ Set `status: completed` in `run.md` (`stopped` if a budget limit ended the run).
 
 Read the backlog, specs, build reports, checks, findings, approvals and `workspaces/.slots.md`, and show one table:
 
-| Feature | Title | Stage | Round | Slot | Waiting on |
-|---|---|---|---|---|---|
+| Feature | Title | Stage | Round | Slot | Waiting on | Tokens |
+|---|---|---|---|---|---|---|
 
-Stage is one of: not started, spec questions, spec draft, building, checks failing, in review, fixing, approved, escalated, PR open, merged. "Waiting on" is a person (for gates and escalations) or an agent. List features that are ready to start (dependencies approved) at the end.
+Tokens is the feature's total from `usage.md`. Below the table, show the project's total tokens, including planning and launch. Stage is one of: not started, spec questions, spec draft, building, checks failing, in review, fixing, approved, escalated, PR open, merged. "Waiting on" is a person (for gates and escalations) or an agent. List features that are ready to start (dependencies approved) at the end.
 
 ## `/factory cleanup <project>`
 

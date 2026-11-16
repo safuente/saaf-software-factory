@@ -111,6 +111,7 @@ Paths in Reads and Writes are relative to the project folder `projects/<id>-<nam
         ├── specs/
         ├── builds/
         ├── reviews/
+        ├── usage.md         # tokens, tool uses and duration of every agent run
         └── launch/          # demo video and Carrd-ready landing page
             ├── demo/
             └── landing/
@@ -123,7 +124,8 @@ runs/                        # one folder per autonomous run
     ├── run.md               # state, budget and log
     ├── ideas.md             # Scout output
     ├── validation.md        # Validator output
-    └── report.md            # final report
+    ├── usage.md             # usage of the agents that ran before a project existed
+    └── report.md            # final report, including total tokens
 workspaces/                  # git-ignored
 ├── <name>/                  # main checkout of each project, always on the base branch
 ├── .worktrees/

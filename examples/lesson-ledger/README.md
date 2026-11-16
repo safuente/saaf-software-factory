@@ -26,6 +26,7 @@ The `repo:` field in [project/brief.md](project/brief.md) still points to `works
   - VTT and SRT subtitles.
   - Screenshots.
   - [script.md](project/launch/demo/script.md), the storyboard with timings.
+- [project/usage.md](project/usage.md): the usage ledger, with the tokens the demo recording used.
 - [output/](output/): the app.
 
 ## Simplifications
