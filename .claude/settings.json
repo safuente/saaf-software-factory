@@ -5,10 +5,8 @@
       "Edit(./projects/**)",
       "Edit(./runs/**)",
       "Edit(./workspaces/**)",
-
       "WebSearch",
       "WebFetch",
-
       "Bash(make:*)",
       "Bash(git:*)",
       "Bash(docker:*)",
@@ -28,23 +26,25 @@
       "Bash(cp:*)",
       "Bash(mv:*)"
     ],
-    "ask": [
-      "Bash(git push:*)",
-      "Bash(git * push:*)",
-      "Bash(git * push)",
-      "Bash(git remote add:*)",
-      "Bash(git * remote add:*)",
-      "Bash(gh:*)"
-    ],
     "deny": [
       "Bash(git push --force:*)",
-      "Bash(git * push --force:*)",
+      "Bash(git * push --force*)",
       "Bash(git push -f:*)",
-      "Bash(git * push -f:*)",
+      "Bash(git * push -f*)",
       "Bash(git reset --hard:*)",
-      "Bash(git * reset --hard:*)",
+      "Bash(git * reset --hard*)",
       "Bash(docker system prune:*)",
       "Bash(docker volume prune:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git * push*)",
+      "Bash(git remote add:*)",
+      "Bash(git * remote add*)",
+      "Bash(gh:*)"
     ]
+  },
+  "enabledPlugins": {
+    "frontend-design@anthropic-plugin-directory": true
   }
 }

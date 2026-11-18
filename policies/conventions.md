@@ -26,6 +26,27 @@ Tie-breaker: if the product needs an internal admin UI, choose Django. Otherwise
 
 Tie-breaker: choose React for applications and Astro for sites. Choose Angular only when one of its criteria clearly applies.
 
+### Styling
+
+Every project with a frontend uses a CSS framework, chosen in the stack ADR and set up in `F00`. No project styles its interface with hand-written CSS only.
+
+| Option | Choose when |
+|---|---|
+| **Tailwind CSS** (default) | Most projects: custom look per product, React or Astro, design tokens kept in the Tailwind theme |
+| **Bootstrap** | Admin panels, back-office tools and internal apps where ready-made components (navbar, forms, tables, modals) matter more than a distinctive look, or when the client mandates it. With React, use plain Bootstrap CSS classes, without jQuery or Bootstrap's JavaScript bundle |
+
+Tie-breaker: choose Tailwind CSS.
+
+**Visual identity.** `F00` defines it with the `frontend-design` skill and writes the design plan to `docs/design.md` in the project repository: palette, typefaces and type scale, layout concept and principles. The framework theme implements that plan. Later features follow it and change it only when their spec asks for it.
+
+Rules for both:
+
+- **The theme is the design system.** Brand colors, typography, spacing, radii and breakpoints are defined once: in the Tailwind theme (`@theme` in the main CSS file, or `tailwind.config`), or in Bootstrap's Sass variables. Components use the theme's names (`bg-primary`, `text-muted`, `btn-primary`), never literal hex values, pixel sizes or arbitrary values like `p-[13px]`.
+- **Shared components wrap the framework.** Buttons, inputs, tables, alerts and the page layout live in `frontend/src/shared/` and are reused by every feature. Features do not repeat long class lists for the same element.
+- **Custom CSS is the exception.** Only for what the framework cannot express. Keep it in the shared styles folder and use the theme's variables.
+- **Accessible defaults.** The theme's colors meet WCAG AA contrast for text and UI components. Focus styles stay visible. Never remove them with `outline-none` or `focus:outline-0` without a replacement.
+- **Versions.** Latest stable major of the chosen framework, pinned in the lock file, installed as a dependency and built with the frontend. No CDN links.
+
 Do not combine Django server-rendered pages with a separate SPA in the same product. Pick one rendering model.
 
 ### Shared

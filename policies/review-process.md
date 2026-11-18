@@ -81,3 +81,5 @@ Every blocking finding needs evidence that someone else can check: the code exce
 - `not-applicable`: the feature is outside your domain, e.g. UX or UI on a feature with `touches_frontend: false`. Write the file with this verdict and a one-line summary, and stop.
 
 Update the frontmatter counts and verdict to reflect the latest round. Finish by reporting the verdict, the counts and the most important finding.
+
+**The findings file is your only output that counts.** The orchestrator reads the file, not your final message. Before you finish, write or update it with `round` set to the current round and `reviewed` set to the head sha you reviewed (`git -C <repo> rev-parse <branch>`), even when the verdict is `pass` and nothing changed since your previous round. A review whose file still shows an earlier round or sha is treated as not done, and you will be run again.

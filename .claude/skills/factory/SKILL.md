@@ -171,7 +171,8 @@ Run the deterministic checks once, in the feature repo, so that reviewers do not
    - **Round 1**: all four. If the spec has `touches_frontend: false`, do not launch `ux-reviewer` and `ui-reviewer`. Instead, write their findings files yourself from `templates/findings.md` with `verdict: not-applicable`, the current head commit in `reviewed`, and the summary "Feature does not touch the frontend."
    - **Round 2 and later**: always `security-reviewer` and `code-reviewer`, since any code change can affect them. Add `ux-reviewer` and `ui-reviewer` only if their last verdict was `changes-requested`, or if `git diff <last reviewed commit>..<head>` changes files under `frontend/`.
 2. Launch the selected reviewers **in parallel**, in a single message, each with `spec`, `repo`, `branch`, `base`, `round`, `checks` (path to the checks file), `app_url` and `api_url`.
-3. Read every findings file's frontmatter.
+3. Verify that every reviewer you launched actually wrote its result. Its final message does not count, only the file. For each findings file, check that `round` equals the current round and that the sha in `reviewed` equals the feature branch head (`git -C <feature repo> rev-parse HEAD`). If a file is missing or stale, launch that reviewer again with the same parameters, telling it its findings file was not written for this round. If it is still missing or stale after the second run, run `make down`, stop and tell the user which reviewer failed to write its file. Never launch the Approver, and never route on a verdict, until every file passes this check.
+4. Read every findings file's frontmatter.
    - All `pass` or `not-applicable`: go to Stage 6. The app stays up.
    - Any `changes-requested`: go to the fix loop.
 

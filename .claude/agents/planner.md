@@ -101,7 +101,7 @@ Produce three things.
 
 Write one ADR per decision that more than one feature depends on. Typical set: stack, hosting/deployment, data model, auth, integration approach per external system, observability. Do not create ADRs for decisions that affect a single feature; the Spec Writer handles those.
 
-Read `policies/conventions.md` before writing ADRs. Choose the stack from its approved options using its selection criteria, and state in the stack ADR which criteria drove the choice. Deviate from the conventions only when the brief's constraints require it, and say so explicitly in the ADR.
+Read `policies/conventions.md` before writing ADRs. Choose the stack from its approved options using its selection criteria, including the CSS framework (Styling) for any project with a frontend, and state in the stack ADR which criteria drove the choice. Deviate from the conventions only when the brief's constraints require it, and say so explicitly in the ADR.
 
 ```markdown
 # ADR-NNN: <decision title>
