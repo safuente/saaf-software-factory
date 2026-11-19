@@ -1,6 +1,6 @@
 # Plan: lesson-ledger
 
-Status: approved by Santiago Alvarez on 2026-11-16; revision (ADR-005, F04, F05) approved by Santiago Alvarez on 2026-11-18; revision (ADR-006, F06) approved by Santiago Alvarez on 2026-11-19 (pre-authorised, applied by the orchestrator); revision (F07) approved by Santiago Alvarez on 2026-11-19 (pre-authorised, applied by the orchestrator)
+Status: approved by Santiago Alvarez on 2026-11-16; revision (ADR-005, F04, F05) approved by Santiago Alvarez on 2026-11-18; revision (ADR-006, F06) approved by Santiago Alvarez on 2026-11-19 (pre-authorised, applied by the orchestrator); revision (F07) approved by Santiago Alvarez on 2026-11-19 (pre-authorised, applied by the orchestrator); revision (ADR-007, F08) approved by Santiago Alvarez on 2026-11-19 (pre-authorised, applied by the orchestrator)
 
 ## Summary
 Lesson Ledger is a small web app where an independent music teacher records students and lessons, sees monthly totals of money collected and pending, and marks lessons as paid. It is the factory's pilot, so v1 is capped at 4 features including F00 and runs only on a local docker compose stack, with `make check` and `make e2e` as the CI gate. The stack is a FastAPI backend with PostgreSQL and a React (Vite + TypeScript) single-page app served from the same origin as the API. Authentication uses own email/password accounts with server-side sessions in an HttpOnly cookie, and every record carries its owning teacher so isolation is enforced on the server with 404 for other teachers' data.
@@ -13,7 +13,8 @@ Lesson Ledger is a small web app where an independent music teacher records stud
 | [ADR-003](adr/003-data-model.md) | Teacher, Student, Lesson; ownership on every row, 404 across teachers; USD cents; paid as boolean without payment date; no deletes |
 | [ADR-004](adr/004-authentication.md) | Email/password with Argon2id, server-side sessions in an HttpOnly SameSite=Lax cookie, 14-day expiry, no password reset |
 | [ADR-005](adr/005-styling-and-visual-identity.md) | Tailwind CSS with the theme as design system, replacing CSS modules and tokens file (supersedes ADR-001's styling); visual identity in `docs/design.md` via the `frontend-design` skill; self-hosted fonts. Visual identity superseded by ADR-006 |
-| [ADR-006](adr/006-dashboard-visual-identity.md) | Dashboard visual identity from the owner's reference (dark sidebar, dense tables, metrics panel), replacing the manuscript look; WCAG 2.2 AA; owner approves the look on screenshots before merge |
+| [ADR-006](adr/006-dashboard-visual-identity.md) | Dashboard visual identity from the owner's reference (dark sidebar, dense tables, metrics panel), replacing the manuscript look; WCAG 2.2 AA; owner approves the look on screenshots before merge. Amended by ADR-007 |
+| [ADR-007](adr/007-icons-brand-and-motion.md) | Lucide icons (bundled, decorative), original SVG logo, favicon and illustrations, and subtle CSS motion with theme tokens, all off under reduced motion; replaces the project's "no motion" rule; gate adds a live try-out |
 
 ## Backlog
 | ID | Title | Milestone | Depends on | Frontend |
@@ -26,8 +27,9 @@ Lesson Ledger is a small web app where an independent music teacher records stud
 | [F05](backlog/F05-restyle-remaining-pages.md) | Restyle home, students, lessons, summary and pending pages; remove CSS modules and tokens file | v1 | F04 | yes |
 | [F06](backlog/F06-dashboard-redesign.md) | Dashboard redesign of every page and the app shell, approved by the owner on screenshots | v1 | F05 | yes |
 | [F07](backlog/F07-home-overview.md) | Home overview: month KPIs, oldest pending payments, recent lessons, quick actions, first-steps empty state | v1 | F06 | yes |
+| [F08](backlog/F08-icons-brand-and-motion.md) | Icons, brand and motion | v1 | F07 | yes |
 
-Brief feature mapping: account -> F01; students -> F02; record a lesson -> F02; monthly summary -> F03; pending payments and mark as paid -> F03; overview on Home (owner request 2026-11-19) -> F07.
+Brief feature mapping: account -> F01; students -> F02; record a lesson -> F02; monthly summary -> F03; pending payments and mark as paid -> F03; overview on Home (owner request 2026-11-19) -> F07; icons, brand and motion (owner request 2026-11-19) -> F08.
 
 ## Pages
 Every page must have a stated purpose and content of its own (`pilot-notes.md` finding 17). A page without content of its own is a placeholder and must be flagged in Risks or given a backlog item.
@@ -52,8 +54,9 @@ None. The backlog is a single chain, each wave one feature:
 6. F05
 7. F06
 8. F07
+9. F08
 
-F05 must wait for F04's merge, which includes the owner's approval of the visual direction. F06 starts after F05's merge (F05 merged 2026-11-19). F07 can start now (F06 merged 2026-11-19).
+F05 must wait for F04's merge, which includes the owner's approval of the visual direction. F06 starts after F05's merge (F05 merged 2026-11-19). F07 starts after F06's merge (F06 merged 2026-11-19). F08 can start now (F07 merged 2026-11-19).
 
 The F00-F03 chain is a consequence of the 4-feature cap: students and lessons were merged into F02 and summary and payments into F03, which removed the only pairs that could have run concurrently.
 
@@ -80,6 +83,12 @@ The F00-F03 chain is a consequence of the 4-feature cap: students and lessons we
 - **Home and Monthly summary disagree**: two pages show the same month figures. Mitigation: F07 requires the F03 totals definitions and the F06 average rule (R6), and the Spec Writer should add a check comparing both pages for the same seed month.
 - **Home mark-as-paid diverges from Pending payments**: a second place for the same action can drift in messages, focus handling or in-flight state. Mitigation: F07 requires the Pending payments behaviour; the spec should reuse F03's acceptance checks rather than define new ones.
 - **Unneeded backend change for Home**: the existing endpoints cover every Home section with small page sizes (R9). Mitigation: F07 allows a backend change only with a concrete gap justified in the spec.
+- **Motion makes e2e tests flaky** (F08): transitions and load animations change opacity, size and colour over time, so screenshots, layout checks and visibility waits can race them. Mitigation: ADR-007 runs e2e and the gate screenshots with reduced motion, and F08 adds one check that motion exists without the preference and is off with it.
+- **Icons change accessible names**: an icon with its own label or title would change how tests and screen readers find links and buttons. Mitigation: icons are decorative and hidden; F08 keeps every accessible name and the behaviour tests that locate by role and name.
+- **Motion delays focus or content**: a fade or a highlight that holds a row could delay focus after "Mark as paid" or hide figures from screen readers. Mitigation: ADR-007 forbids delaying interaction, focus or content; the highlight applies only where the row stays (R14).
+- **New dependency and CSP**: the icon package must pass the dependency scan, and SVGs with inline `style` or `data:` URIs would be blocked by `default-src 'self'`. Mitigation: ADR-007 SVG rules; the Security reviewer checks the scan result and headers.
+- **Owner cannot judge motion on screenshots**: the gate would approve or reject motion unseen. Mitigation: the F08 gate leaves the stack running with seed data for a live try-out and asks about icons, brand and motion as its own question.
+- **Feature cap exceeded further**: F08 takes v1 to 9 features against the brief's cap of 4, at the owner's request (revision 2026-11-19 c).
 - **Quick-action labels repeat form button labels** ("Record lesson", "Add student"): links on Home and submit buttons on Lessons and Students share words, which may confuse assistive-technology users or tests that locate by name. Mitigation: F07 constraint on distinguishable names and purpose; tests locate by role.
 
 ## Assumptions carried from discovery
@@ -127,6 +136,13 @@ Added in revision 2026-11-19 b:
 - R12. Home has no undo for "Mark as paid", like Pending payments; undo stays on Monthly summary.
 - R13. The new-teacher state is no students and no lessons. A teacher with students but no lessons sees the figures (zeros, average as a dash) and short empty messages in the lists rather than the first-steps guidance.
 
+Added in revision 2026-11-19 c:
+- R14. The green "just marked as paid" highlight applies only where the row stays visible after marking (Monthly summary). On Pending payments and Home the row leaves the list as today, with no highlight and no delay, so focus handling is unchanged. Undo paid has no highlight.
+- R15. "Empty states" means the messages shown when a page's list has no items (Students, Lessons, Monthly summary month without lessons, Pending payments with nothing pending) plus Home's "Get started" box. Whether Home's short in-section messages also get an illustration is the spec's decision; text stays unchanged in every case.
+- R16. "Alerts" means the error and warning messages drawn by the shared alert component; the always-present status live regions get no icon unless the spec shows it does not change what is announced.
+- R17. The logo goes where the owner placed it (sidebar and narrow-screen top bar). Login and sign-up show it only if the spec finds they already show the product name; nothing else on those pages changes.
+- R18. The "no motion" rule lives in the repository (agent notes, a component comment, design tests), not in `policies/conventions.md`, which neither forbids nor requires motion; no factory convention changes.
+
 ## Revision 2026-11-18
 **What changed**
 - ADR-005 added: Tailwind CSS with the theme as design system, visual identity defined in `docs/design.md` with the `frontend-design` skill, self-hosted fonts. ADR-001's status now records that its styling decision is superseded by ADR-005; the rest of ADR-001 stands.
@@ -164,3 +180,16 @@ F00 to F05 are built and merged and were not edited, apart from ADR-005's status
 - Lesson from `pilot-notes.md` finding 17: the plan must state every page's purpose and content, and flag or schedule any page without content of its own.
 
 F00 to F06 are built and merged and were not edited. Re-approval of this revision is handled by the orchestrator.
+
+## Revision 2026-11-19 c
+**What changed**
+- ADR-007 added: Lucide icons (bundled, pinned, ISC, decorative and hidden from assistive technology), an original SVG logo mark with the wordmark, a favicon and original inline SVG illustrations, and subtle CSS motion (150-200 ms hover/focus transitions, bar growth and figure fade on load, a brief green highlight of a row just marked as paid) with durations and easings as theme tokens, all off under reduced motion, nothing flashing, nothing delaying interaction, focus or content. CSP unchanged. The ADR-006 gate adds a live try-out of the running stack. ADR-006's status records the amendment; the rest of ADR-006 stands.
+- Backlog: F08 "Icons, brand and motion" added, depending on F07 (merged). No behaviour change, WCAG 2.2 AA, the F04-F07 multi-device checks, e2e with reduced motion plus one motion on/off check, and the owner gate on screenshots and live.
+- Risks and assumptions updated (R14 to R18; test flakiness, accessible names, delayed focus, dependency and CSP, judging motion, feature cap).
+- No page added; the Pages table is unchanged.
+
+**Why**
+- Owner request after F07 merged (2026-11-19): add icons, an image/brand and subtle animation, with the scope listed in F08. The owner pre-authorised the revision.
+- The project's "no motion" rule and the "no logo or illustrations" entry in `docs/design.md` came from ADR-005/ADR-006 work, so they needed an ADR to change.
+
+F00 to F07 are built and merged and were not edited, apart from ADR-006's status line. Re-approval of this revision is handled by the orchestrator.

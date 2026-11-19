@@ -1,6 +1,6 @@
 # ADR-006: Dashboard visual identity
 
-- Status: proposed
+- Status: proposed; amended by ADR-007 (icon set, logo and illustrations, motion)
 - Date: 2026-11-19
 
 ## Context

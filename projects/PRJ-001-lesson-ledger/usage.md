@@ -103,3 +103,11 @@ Tokens, tool uses and duration are the figures the Agent tool reports for each a
 | 2026-11-19 13:18 | feature | F07 | review | ux-reviewer | sonnet | 1 | 45946 | 14 | 1m 33s |
 | 2026-11-19 13:18 | feature | F07 | review | ui-reviewer | sonnet | 1 | 50258 | 13 | 46s |
 | 2026-11-19 13:20 | feature | F07 | approval | approver | opus | 1 | 73246 | 21 | 3m 9s |
+| 2026-11-19 13:32 | feature | - | planning | planner | opus | - | 56648 | 23 | 2m 32s |
+| 2026-11-19 13:35 | feature | F08 | spec | spec-writer | opus | - | 79619 | 20 | 2m 48s |
+| 2026-11-19 13:38 | feature | F08 | build | builder | opus | 1 | 284350 | 139 | 38m 48s |
+| 2026-11-19 14:22 | feature | F08 | review | security-reviewer | opus | 1 | 35808 | 9 | 53s |
+| 2026-11-19 14:22 | feature | F08 | review | code-reviewer | sonnet | 1 | 47679 | 11 | 36s |
+| 2026-11-19 14:22 | feature | F08 | review | ux-reviewer | sonnet | 1 | 51439 | 24 | 3m 48s |
+| 2026-11-19 14:22 | feature | F08 | review | ui-reviewer | sonnet | 1 | 67093 | 18 | 2m 42s |
+| 2026-11-19 14:26 | feature | F08 | approval | approver | opus | 1 | 84679 | 23 | 5m 11s |

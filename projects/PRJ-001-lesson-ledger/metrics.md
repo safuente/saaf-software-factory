@@ -21,7 +21,7 @@ All six specs have 6 acceptance criteria, so tokens per criterion is tokens ÷ 6
 
 | Feature | Rounds | Agent runs | Tokens | Blocking: defect | Blocking: test gap | Blocking: noise | Escaped defects | Unplanned interventions |
 |---|---|---|---|---|---|---|---|---|
-| Planning + revisions | - | 5 | 211,897 | - | - | - | - | 0 |
+| Planning + revisions | - | 6 | 268,545 | - | - | - | - | 0 |
 | F00 Project base | 3 | 16 | 647,165 | 1 (SEC-1) | 2 (APR-1, APR-2) | 0 | 0 | 2 |
 | F01 Teacher accounts | 1 | 7 | 467,529 | 0 | 0 | 0 | 2 | 0 |
 | F02 Students and lessons | 3 | 16 | 829,096 | 1 (UI-1) | 1 (APR-1) | 0 | 0 | 0 |
@@ -30,7 +30,8 @@ All six specs have 6 acceptance criteria, so tokens per criterion is tokens ÷ 6
 | F05 Restyle remaining pages | 4 | 19 | 1,183,619 | 3 (UX-2, UI-2, CODE-2) | 1 (CODE-3) | 0 | - | 5 |
 | F06 Dashboard redesign | 3 | 14 | 1,003,926 | 2 (APR-1, APR-2) | 0 | 0 | - | 0 |
 | F07 Home overview | 1 | 7 | 616,689 | 0 | 0 | 0 | - | 0 |
-| **Total so far** | | **99** | **5,989,826** | **7** | **4** | **0** | **5** | **9** |
+| F08 Icons, brand and motion | 1 | 7 | 650,667 | 0 | 0 | 0 | - | 0 |
+| **Total so far** | | **107** | **6,697,141** | **7** | **4** | **0** | **5** | **9** |
 
 Notes on the table:
 
@@ -83,9 +84,9 @@ Two readings:
 
 | Gate | Times used | Changed the outcome | Notes |
 |---|---|---|---|
-| Plan approval | 4 (plan, 3 revisions) | 0 | Approved as proposed each time; the F06 and F07 revisions were pre-authorised by the owner |
-| Spec approval | 8 | 1 | F04 was sent back for multi-device criteria (v2) |
-| Merge | 7 | 0 | F04 was merged without a visual check: the gate failed (pilot finding 15). F06 used the screenshot gate (14 screenshots, explicit "do you approve the look?") and was approved |
+| Plan approval | 5 (plan, 4 revisions) | 0 | Approved as proposed each time; the F06 to F08 revisions were pre-authorised by the owner |
+| Spec approval | 9 | 1 | F04 was sent back for multi-device criteria (v2) |
+| Merge | 8 | 0 | F04 was merged without a visual check: the gate failed (pilot finding 15). F06 used the screenshot gate (14 screenshots, explicit "do you approve the look?") and was approved |
 
 A gate that never changes the outcome is either working well upstream or rubber-stamping. The F04 merge was the second case.
 
@@ -102,6 +103,6 @@ Not run yet. Record each run here with its date, the factory commit and the resu
 
 ## Trends to watch
 
-- **Rounds per feature**: 3, 1, 3, 1, 1, 4, 3, 1. There is no clear improvement yet. F05's extra rounds came from e2e infrastructure, a defect that escaped from F03, and coverage.
+- **Rounds per feature**: 3, 1, 3, 1, 1, 4, 3, 1, 1. There is no clear improvement yet. F05's extra rounds came from e2e infrastructure, a defect that escaped from F03, and coverage.
 - **Tokens per feature**: about 470k with no fix rounds. Each extra round adds about 140k to 200k.
 - **Escaped defects per feature**: currently about 0.7. The aim is 0. The most expensive one so far was visual (F04), not functional.
