@@ -52,3 +52,54 @@ Tokens, tool uses and duration are the figures the Agent tool reports for each a
 | 2026-11-18 13:53 | feature | F03 | review | ui-reviewer | sonnet | 1 | 34261 | 9 | 1m 16s |
 | 2026-11-18 13:53 | feature | F03 | review | ux-reviewer | sonnet | 1 | 44048 | 20 | 1m 40s |
 | 2026-11-18 14:00 | feature | F03 | approval | approver | opus | 1 | 82069 | 24 | 6m 0s |
+| 2026-11-18 16:35 | plan | - | planning | planner | opus | - | 46680 | 24 | 1m 59s |
+| 2026-11-18 16:40 | feature | F04 | spec | spec-writer | opus | - | 52414 | 19 | 2m 52s |
+| 2026-11-18 16:56 | feature | F04 | spec | spec-writer | opus | - | 29106 | 11 | 1m 45s |
+| 2026-11-18 17:22 | feature | F04 | build | builder | opus | - | 198417 | 90 | 24m 54s |
+| 2026-11-18 17:25 | feature | F04 | review | code-reviewer | sonnet | 1 | 44060 | 12 | 26s |
+| 2026-11-18 17:25 | feature | F04 | review | security-reviewer | opus | 1 | 38537 | 8 | 50s |
+| 2026-11-18 17:25 | feature | F04 | review | ux-reviewer | sonnet | 1 | 38667 | 15 | 57s |
+| 2026-11-18 17:25 | feature | F04 | review | ui-reviewer | sonnet | 1 | 51151 | 14 | 1m 23s |
+| 2026-11-18 17:31 | feature | F04 | approval | approver | opus | 1 | 107639 | 25 | 5m 14s |
+| 2026-11-18 17:39 | feature | F05 | spec | spec-writer | opus | - | 73823 | 27 | 2m 15s |
+| 2026-11-18 18:22 | feature | F05 | build | builder | opus | - | 222294 | 104 | 40m 22s |
+| 2026-11-18 19:05 | feature | F05 | fix | builder | opus | 1 | 75589 | 45 | 29m 42s |
+| 2026-11-18 19:14 | feature | F05 | review | code-reviewer | sonnet | 2 | 70710 | 15 | 1m 8s |
+| 2026-11-18 19:14 | feature | F05 | review | security-reviewer | opus | 2 | 40682 | 15 | 1m 24s |
+| 2026-11-18 19:17 | feature | F05 | review | ux-reviewer | sonnet | 2 | 53744 | 22 | 4m 14s |
+| 2026-11-18 19:18 | feature | F05 | review | ui-reviewer | sonnet | 2 | 76448 | 27 | 5m 30s |
+| 2026-11-18 20:18 | feature | F05 | fix | builder | opus | 2 | 147745 | 73 | 30m 55s |
+| 2026-11-18 20:22 | feature | F05 | review | security-reviewer | opus | 3 | 27922 | 6 | 30s |
+| 2026-11-18 20:22 | feature | F05 | review | code-reviewer | sonnet | 3 | 34184 | 10 | 48s |
+| 2026-11-18 20:23 | feature | F05 | review | ux-reviewer | sonnet | 3 | 27285 | 11 | 1m 16s |
+| 2026-11-18 20:23 | feature | F05 | review | ui-reviewer | sonnet | 3 | 34089 | 10 | 1m 29s |
+| 2026-11-19 10:01 | feature | F05 | fix | builder | opus | 4 | 65808 | 37 | 5m 2s |
+| 2026-11-19 10:10 | feature | F05 | review | security-reviewer | opus | 4 | 19530 | 5 | 22s |
+| 2026-11-19 10:10 | feature | F05 | review | code-reviewer | sonnet | 4 | 23520 | 8 | 19s |
+| 2026-11-19 10:10 | feature | F05 | review | ui-reviewer | sonnet | 4 | 32255 | 12 | 8m 12s |
+| 2026-11-19 10:13 | feature | F05 | approval | approver | opus | 4 | 42837 | 9 | 54s |
+| 2026-11-19 10:14 | feature | F05 | review | ux-reviewer | sonnet | 4 | 23851 | 9 | 57s |
+| 2026-11-19 10:15 | feature | F05 | approval | approver | opus | 4 | 91303 | 29 | 4m 53s |
+| 2026-11-19 10:21 | feature | - | planning | planner | opus | - | 62581 | 32 | 2m 32s |
+| 2026-11-19 10:23 | feature | F06 | spec | spec-writer | opus | - | 71317 | 20 | 2m 35s |
+| 2026-11-19 10:26 | feature | F06 | build | builder | opus | 1 | 335296 | 171 | 51m 46s |
+| 2026-11-19 11:23 | feature | F06 | fix | builder | opus | 2 | 69381 | 42 | 16m 35s |
+| 2026-11-19 11:43 | feature | F06 | review | security-reviewer | opus | 2 | 37095 | 10 | 49s |
+| 2026-11-19 11:43 | feature | F06 | review | code-reviewer | sonnet | 2 | 55077 | 14 | 40s |
+| 2026-11-19 11:43 | feature | F06 | review | ux-reviewer | sonnet | 2 | 40536 | 15 | 1m 41s |
+| 2026-11-19 11:43 | feature | F06 | review | ui-reviewer | sonnet | 2 | 61707 | 26 | 1m 52s |
+| 2026-11-19 11:45 | feature | F06 | approval | approver | opus | 2 | 90059 | 26 | 4m 29s |
+| 2026-11-19 11:49 | feature | F06 | fix | builder | opus | 3 | 66255 | 40 | 11m 29s |
+| 2026-11-19 12:04 | feature | F06 | review | security-reviewer | opus | 3 | 22371 | 5 | 26s |
+| 2026-11-19 12:04 | feature | F06 | review | code-reviewer | sonnet | 3 | 26335 | 7 | 18s |
+| 2026-11-19 12:04 | feature | F06 | review | ux-reviewer | sonnet | 3 | 24987 | 12 | 1m 6s |
+| 2026-11-19 12:04 | feature | F06 | review | ui-reviewer | sonnet | 3 | 34791 | 13 | 54s |
+| 2026-11-19 12:06 | feature | F06 | approval | approver | opus | 3 | 68719 | 15 | 2m 17s |
+| 2026-11-19 12:32 | feature | - | planning | planner | opus | - | 44282 | 15 | 1m 16s |
+| 2026-11-19 12:33 | feature | F07 | spec | spec-writer | opus | - | 91899 | 20 | 3m 7s |
+| 2026-11-19 12:36 | feature | F07 | build | builder | opus | 1 | 259034 | 119 | 38m 41s |
+| 2026-11-19 13:18 | feature | F07 | review | security-reviewer | opus | 1 | 39357 | 7 | 40s |
+| 2026-11-19 13:18 | feature | F07 | review | code-reviewer | sonnet | 1 | 56949 | 18 | 43s |
+| 2026-11-19 13:18 | feature | F07 | review | ux-reviewer | sonnet | 1 | 45946 | 14 | 1m 33s |
+| 2026-11-19 13:18 | feature | F07 | review | ui-reviewer | sonnet | 1 | 50258 | 13 | 46s |
+| 2026-11-19 13:20 | feature | F07 | approval | approver | opus | 1 | 73246 | 21 | 3m 9s |

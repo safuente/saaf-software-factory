@@ -1,6 +1,6 @@
 # ADR-001: Application stack
 
-- Status: proposed
+- Status: proposed; frontend styling (plain CSS modules) superseded by ADR-005
 - Date: 2026-11-16
 
 ## Context

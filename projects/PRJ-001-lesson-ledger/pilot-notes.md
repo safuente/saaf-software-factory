@@ -53,6 +53,11 @@ Ordered by impact. **Fix** is the proposed change to the factory.
 13. **Error copy is inconsistent.** On a network failure, the F01 login and sign-up forms show "Something went wrong. Please try again." The F02 and F03 pages show "We couldn't reach Lesson Ledger." Fix (in the project): add a follow-up item to align F01.
 14. **TDD evidence is weak when one commit satisfies several criteria.** In F03, the AC-4 and AC-5 tests passed straight away against the AC-3 code (CODE-1). Fix: in that case the builder should say so in the build report, so reviewers don't flag it.
 
+### Added after F04 and F05
+
+15. **The visual design gate did not work.** F04 was meant to let the owner approve the look at merge. The orchestrator presented the merge mostly as a technical decision (the 12.5% size note) and did not explicitly ask the owner to look at the screens. The owner merged, then rejected the design after F05 was built on it, which cost F05's styling work. **Fix:** for a feature that sets or changes the visual identity, the merge gate must show screenshots of every changed screen and ask "do you approve the look?" as its own question. Better still, the builder produces 2 or 3 design proposals (palette, type, one sample screen) and the owner picks one before the full build. Give the planner a visual reference from the owner (`context/`) whenever one exists.
+16. **E2E flakiness under host load.** Parallel reseeding, a test that deleted a seed account, and 9 Playwright workers against Argon2id on a shared Docker VM made `make e2e` fail at random. Fixed in F05: the seed runs once in a global setup, the tests only read the seed accounts, 4 workers, a 10 s expect timeout. **Fix (factory):** add these to the conventions for e2e.
+
 ## Open non-blocking suggestions in the product
 
 Candidates for a follow-up feature:
@@ -68,6 +73,9 @@ Candidates for a follow-up feature:
 | F03 | UI-1 | "Next month" wraps below the heading at 375px |
 | F03 | UX-1 | After "Mark as paid" on /pending, the message doesn't say that undo exists on Monthly summary |
 | F03 | - | An instant double click sends two identical PATCH requests (harmless, the request is idempotent) |
+| F04 | approver note 1 | Root font size is 18px (`html` gets `text-body`), so every rem token renders 12.5% larger than `docs/design.md` states. **Owner decision 2026-11-18: merge as is, fix at the start of F05** (pass to the F05 spec-writer: either root 16px or update the doc's px figures) |
+| F04 | CODE-1 | `designDocParser.ts` is a test-only helper inside the production source tree |
+| main | security note | `picomatch` ReDoS (13 high in full `npm audit`) via vite, vitest and typescript-eslint; dev dependencies only, predates F04 |
 
 ## What worked
 
@@ -77,3 +85,7 @@ Candidates for a follow-up feature:
 - Human gates: four spec approvals and four merges, each done only when the user said so.
 - The security reviewer found a real exposure in F00, the database reachable from the LAN, that the checks did not catch.
 - Fewer rounds over time: F01 and F03 passed in round 1, after reviewer prompt fixes made during F00.
+
+### Added after F06
+
+17. **The look gate checks appearance, not usefulness.** F06's screenshots were approved although Home only showed a title and "Signed in as…", empty since F01 and kept that way by F06's "no behaviour change" rule. The owner noticed after merge, which led to F07. **Fix:** the planner lists every page with its purpose and content; a page with no content of its own (placeholder, empty shell) is flagged as a risk or given a backlog item. At the screenshot gate, the orchestrator points out any page that looks empty.
