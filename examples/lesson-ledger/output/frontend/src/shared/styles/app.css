@@ -1,0 +1,293 @@
+@import "tailwindcss";
+
+/*
+ * Self-hosted font (docs/design.md, Typefaces): Inter, latin subset, one variable WOFF2 file
+ * covering weights 400 to 600, bundled by Vite and served from the app's origin, so the CSP
+ * default-src 'self' allows it. Licence: fonts/inter/OFL.txt.
+ */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./fonts/inter/inter-latin-wght-normal.woff2") format("woff2");
+}
+
+/*
+ * The design system of docs/design.md (ADR-006, dashboard direction): every colour, typeface,
+ * type-scale step, spacing step, radius, breakpoint and width is defined here once, under the
+ * name the design plan uses. Tailwind's defaults are cleared, so a class can only use these.
+ */
+@theme {
+  --color-*: initial;
+  --color-canvas: #ffffff;
+  --color-black: #000000;
+  --color-graphite: #1d2127;
+  --color-slate: #5b626d;
+  --color-outline: #868d98;
+  --color-rule: #e4e6ea;
+  --color-mist: #f5f6f8;
+  --color-shell: #1b1f26;
+  --color-shell-raised: #2c323c;
+  --color-shell-text: #f3f4f6;
+  --color-shell-muted: #b4bac4;
+  --color-focus: #4d8df7;
+  --color-paid: #17803d;
+  --color-unpaid: #9a5b00;
+  --color-pending-bar: #e8a33d;
+  --color-danger: #c42b2b;
+  --color-danger-wash: #fdf0ef;
+  --color-paid-wash: #eefaf1;
+
+  --font-*: initial;
+  --font-sans: "Inter", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --default-font-family: var(--font-sans);
+
+  --text-*: initial;
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.45;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.5;
+  --text-heading: 1.125rem;
+  --text-heading--line-height: 1.35;
+  --text-title: 2rem;
+  --text-title--line-height: 1.2;
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.1;
+
+  --spacing: initial;
+  --spacing-*: initial;
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-20: 5rem;
+
+  --radius-*: initial;
+  --radius-control: 0.5rem;
+  --radius-panel: 0.75rem;
+  --radius-pill: 9999px;
+
+  --breakpoint-*: initial;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+
+  --container-*: initial;
+  --container-content: 80rem;
+  --container-form: 24rem;
+  --container-measure: 68ch;
+  --container-sidebar: 15rem;
+  --container-panel: 16rem;
+  --container-card: 28rem;
+  --container-illustration: 24rem;
+
+  /* Icons (ADR-007): sized relative to the text they sit next to, so they grow with it. */
+  --icon-size: 1.2em;
+
+  /* Motion (ADR-007): every duration and easing the interface uses. */
+  --ease-*: initial;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --duration-interaction: 180ms;
+  --duration-grow: 600ms;
+  --duration-fade: 300ms;
+  --duration-highlight: 900ms;
+  --duration-entrance: 700ms;
+}
+
+/* Room after the last column of a table that scrolls sideways, so its last columns can come to
+ * rest at the pinned Student column's edge (F05 UX-2). The caption box spans it too. */
+@utility table-room {
+  padding-inline-end: var(--container-form);
+}
+
+/* The initials circle before a student's name (docs/design.md: Initials). Generated content
+ * with empty alternative text: seen, but not part of the name's text or accessible name, which
+ * stay exactly the student's name. Tailwind sets `content` only through arbitrary values. */
+@utility initials {
+  &::before {
+    content: attr(data-initials) / "";
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--spacing-7);
+    block-size: var(--spacing-7);
+    margin-inline-end: var(--spacing-3);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-rule);
+    color: var(--color-graphite);
+    font-size: var(--text-micro);
+    line-height: var(--text-micro--line-height);
+    font-weight: 600;
+  }
+}
+
+/* The decorative tick before "Paid" (docs/design.md: Payment status), with empty alternative
+ * text, so the status reads exactly "Paid". */
+@utility check-mark {
+  &::before {
+    content: "\2713" / "";
+    margin-inline-end: var(--spacing-1);
+  }
+}
+
+/* A decorative Lucide icon before a control's or alert's text (docs/design.md: Icons): as wide
+ * as `--icon-size` and one line tall, so the glyph centres on the first line of text. Its
+ * colour is the text's (`currentColor`). */
+@utility icon {
+  flex-shrink: 0;
+  inline-size: var(--icon-size);
+  block-size: 1lh;
+}
+
+/*
+ * Motion (docs/design.md: Motion, ADR-007). Every transition and animation sits inside
+ * `prefers-reduced-motion: no-preference`, so with reduced motion the final state shows at once.
+ * Load motion animates opacity and transform only, so layout is final in the first frame; each
+ * animation runs once and is shorter than a second.
+ */
+@keyframes grow-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* One fade from the green wash to the row's ground: one luminance change, never a flash. */
+@keyframes paid-highlight {
+  from {
+    background-color: var(--color-paid-wash);
+  }
+  to {
+    background-color: var(--color-canvas);
+  }
+}
+
+/* The signed-out brand panel's content rises a little into place (ADR-008). */
+@keyframes brand-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--spacing-4));
+  }
+}
+
+/* Hover and focus feedback on buttons and links: colours only. The focus ring (outline) is not
+ * transitioned, so it is complete in the first frame. */
+@utility motion-interaction {
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: color, background-color, border-color, text-decoration-color;
+    transition-duration: var(--duration-interaction);
+    transition-timing-function: var(--ease-standard);
+  }
+}
+
+/* The paid segment of the metrics bar grows from the bar's start when the panel appears. */
+@utility motion-grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: grow-in var(--duration-grow) var(--ease-decelerate) 1;
+  }
+}
+
+/* A figure's value fades in when it appears; its text is in the accessibility tree at once. */
+@utility motion-fade {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fade-in var(--duration-fade) var(--ease-decelerate) 1;
+  }
+}
+
+/* A row just marked as paid: its cells (the pinned one has its own ground) fade from green. */
+@utility motion-highlight {
+  & > td {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: paid-highlight var(--duration-highlight) var(--ease-standard) 1;
+    }
+  }
+}
+
+/* The entrance of the brand panel on Log in and Sign up, once per page appearance (ADR-008).
+ * Only the panel's content moves: the form is final and usable from the first frame. */
+@utility motion-entrance {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: brand-enter var(--duration-entrance) var(--ease-decelerate) 1;
+  }
+}
+
+/* Base typography and the focus ring every focusable element shares (docs/design.md). The root
+ * keeps the browser's font size (16 px by default); body text is set on body. */
+@layer base {
+  html {
+    @apply bg-canvas font-sans text-graphite;
+  }
+
+  body {
+    @apply text-body;
+  }
+
+  h1,
+  h2 {
+    @apply font-semibold;
+  }
+
+  h2 {
+    @apply text-heading;
+  }
+
+  p,
+  label {
+    @apply max-w-measure;
+  }
+
+  a {
+    @apply text-graphite underline underline-offset-4;
+  }
+
+  /* Preflight removes paragraph spacing and list markers. Paragraphs without a class of their
+   * own keep spacing 3 above and below; lists keep their markers unless a class removes them. */
+  p:not([class]) {
+    @apply my-3;
+  }
+
+  ul,
+  ol {
+    list-style: revert;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-focus;
+  }
+
+  /* Scrolling a control into view keeps spacing 2 around it, more than the ring and its gap,
+   * so the ring is never cut off at the viewport edge (F05 UI-2). */
+  a[href],
+  button,
+  input,
+  select,
+  textarea,
+  [tabindex]:not([role="region"]) {
+    @apply scroll-m-2;
+  }
+
+  /* A table region keeps spacing 2 below it only (F05 UI-3). */
+  [role="region"][tabindex] {
+    @apply scroll-mb-2;
+  }
+}

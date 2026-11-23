@@ -1,37 +1,48 @@
 ---
-id: PRJ-900
+id: PRJ-001
 name: lesson-ledger
 repo: workspaces/lesson-ledger
 client: internal
-owner: factory (example project)
+owner: Santiago Alvarez
 ---
 
 ## Vision
-A simple tool for independent music teachers to record the lessons they give and see at a glance who still owes them money, replacing notebooks and spreadsheets.
+A simple web app for independent music teachers to record the lessons they give and see at a glance who still owes them money, replacing notebooks and spreadsheets. This is the factory's pilot project: its purpose is to run the full pipeline end to end and find what breaks.
 
 ## Users and roles
-- **Teacher**: gives private lessons to 5-30 students, records each lesson, tracks payments.
+- **Teacher**: gives private lessons to 5-30 students. Records each lesson, sees the month's totals, and marks lessons as paid. Each teacher sees only their own students and lessons.
 
 ## Main features
-- Monthly summary of lessons given, money collected and money pending
-- Record a lesson (student, date, duration, price)
-- List of pending payments and mark a lesson as paid
+- Teacher account: sign up, log in, log out
+- Students: add and list the teacher's students
+- Record a lesson (student, date, duration, price); new lessons start unpaid
+- Monthly summary: lessons given, money collected, money pending, list of lessons with payment status
+- Pending payments list, and mark a lesson as paid
 
 ## Out of scope
-- Invoices, online payments, student accounts, calendar sync, mobile app
+- Invoices, receipts or tax documents
+- Online payments or payment reminders by email
+- Student or parent accounts
+- Calendar sync, recurring lessons, scheduling
+- Mobile apps
+- Multiple currencies (USD only)
 
 ## Non-functional requirements
 Factory defaults. Interface in English (US), prices in USD.
 
 ## Security and compliance
 - **Authentication**: own accounts with email and password
-- **Sensitive data**: none beyond student names; synthetic data only
+- **Sensitive data**: student names only; synthetic data in every environment
+- **Regulations**: none
 
 ## Integrations
 None.
 
 ## Constraints
-Example project. Runs locally only.
+- Pilot of the factory: keep v1 small. **At most 4 features including F00.**
+- Stack: FastAPI backend and React frontend, so the UX and UI reviewers and the Playwright tests are exercised.
+- Runs locally only. No deployment in v1.
 
 ## Milestones
-- **v1**: the three main features.
+- **v1**: account, students, lessons, monthly summary, pending payments.
+- **v2**: none planned.

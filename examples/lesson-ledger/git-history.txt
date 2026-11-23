@@ -1,0 +1,207 @@
+*   d71b2f8 2026-11-23 F09: Branded sign-in pages
+|\  
+| * cec9bc3 2026-11-19 fix(F09): mark the signed-out mark, wordmark and drawing as brand, not icons
+| * 6e668b0 2026-11-19 feat(F09): AC-6 design doc, agent notes and the 6 gate screenshots
+| * 71038f6 2026-11-19 test(F09): AC-6 design doc, agent notes and the 6 screenshots
+| * 43b9bd9 2026-11-19 test(F09): AC-5c F05 AC-6 per-state checks on Log in and Sign up, both motion settings
+| * 6743880 2026-11-19 feat(F09): AC-4 entrance of the signed-out brand panel (ADR-008)
+| * e91f75f 2026-11-19 test(F09): AC-4 entrance of the brand panel, once, off under reduced motion
+| * 243a269 2026-11-19 feat(F09): AC-3 'You have logged out.' after a confirmed log out
+| * 87d2410 2026-11-19 test(F09): AC-3 logged-out notice after a confirmed log out only
+| * 545cc54 2026-11-19 feat(F09): AC-1 AC-2 AC-5 brand panel, strip, ledger drawing and card on Log in and Sign up
+| * f2ea8f1 2026-11-19 test(F09): AC-1 AC-2 AC-5 brand panel, strip and card on Log in and Sign up
+|/  
+*   4ac8d92 2026-11-19 F08: Icons, brand and motion
+|\  
+| * 7bac4f3 2026-11-19 feat(F08): AC-6 design doc, agent notes and the 18 gate screenshots
+| * cbabff9 2026-11-19 test(F08): AC-6 checks on illustrated states, graphics at 200% text, CSP, design doc, notes, screenshots
+| * 7f63ecc 2026-11-19 feat(F08): AC-4 AC-5 motion tokens, colour transitions, bar grow, figure fade, paid highlight
+| * 9fdd69c 2026-11-19 test(F08): AC-4 AC-5 motion tokens, transitions, load motion, highlight, reduced motion
+| * bc7dc38 2026-11-19 feat(F08): AC-3 original illustrations above Get started and the list empty states
+| * 3cbd4b5 2026-11-19 test(F08): AC-3 illustrations above Get started and the list empty states
+| * c939845 2026-11-19 feat(F08): AC-2 original logo mark and wordmark in the shell, SVG favicon
+| * 863c51a 2026-11-19 test(F08): AC-2 logo mark, wordmark and favicon
+| * 9e5e93d 2026-11-19 feat(F08): AC-1 Lucide icons on sidebar links, action buttons and alerts
+| * 1b2c962 2026-11-19 test(F08): AC-1 decorative icons on links, action buttons and alerts
+| * c10bd7d 2026-11-19 chore(F08): add lucide-react 1.76.0, exact pin (ADR-007 icon set)
+|/  
+*   f56924c 2026-11-19 F07: Home overview
+|\  
+| * f64fbf2 2026-11-19 feat(F07): AC-6 Home's look per docs/design.md, page actions, screenshots
+| * d54a3e3 2026-11-19 test(F07): AC-6 accessibility, devices, CSP and design doc checks of Home
+| * ee4f91d 2026-11-19 feat(F07): AC-5 Get started, partial, loading and error states of Home
+| * 2f2e254 2026-11-19 test(F07): AC-5 empty, partial, loading and error states of Home
+| * 211efc2 2026-11-19 feat(F07): AC-4 quick actions in Home's title row
+| * 51c3a07 2026-11-19 test(F07): AC-2e record only the reads of a settled reload
+| * bd77aaa 2026-11-19 test(F07): AC-4 quick actions on Home
+| * f284bbc 2026-11-19 feat(F07): AC-3 mark as paid on Home
+| * 8f6df42 2026-11-19 test(F07): AC-3 mark as paid on Home
+| * 6d61aad 2026-11-19 feat(F07): AC-2 oldest unpaid and latest lessons on Home
+| * 6e366c3 2026-11-19 test(F07): AC-2 oldest unpaid and latest lessons on Home
+| * b6d75c7 2026-11-19 feat(F07): AC-1 month figures on Home
+| * b103a30 2026-11-19 test(F07): AC-1 month figures on Home
+|/  
+*   0ac9e59 2026-11-19 F06: Dashboard redesign
+|\  
+| * 84158b5 2026-11-19 docs(F06): retake the AC-1d screenshots after APR-1 and APR-2
+| * a7352b1 2026-11-19 refactor(F06): CODE-2 re-wrap the Table doc comment
+| * a8a5d0c 2026-11-19 docs(F06): APR-1, APR-2 design.md Layout and Students list
+| * 57be7bc 2026-11-19 fix(F06): APR-2 students list label "Your students" in slate (AC-3d)
+| * fccd708 2026-11-19 fix(F06): APR-1 Log out at the bottom of the full sidebar on pages taller than the viewport (AC-2a)
+| * 6701c05 2026-11-19 test(F06): reproduce APR-2 students list has no grey label (AC-3d)
+| * 72ed326 2026-11-19 test(F06): reproduce APR-1 Log out at the first screen's bottom, not the sidebar's, on long pages (AC-2a)
+| * 89f5d66 2026-11-19 fix(F06): scroll a focused row button into its table region before the overflow is measured (AC-6g)
+| * 7293ece 2026-11-19 test(F06): reproduce a focused row button left outside the viewport when Tab beats the overflow measure (AC-6g)
+| * ad9a09f 2026-11-19 feat(F06): AC-1 screenshots of the seven pages at 375 and 1280 px; agent notes for the dashboard identity
+| * b7da75f 2026-11-19 test(F06): AC-6 log-in and sign-up states at 375, 768 and 1280 px
+| * 3465b04 2026-11-19 fix(F06): a table whose stretched columns round 1 px past its region does not overflow
+| * b6e429d 2026-11-19 test(F06): reproduce table-room toggling when stretched columns round 1 px past the region
+| * 5ad9305 2026-11-19 fix(F06): bring a focused row button fully into its table region; summary table fits beside the panel at 1280 px
+| * 68c1a46 2026-11-19 test(F06): reproduce row buttons left partly outside a table region after Tab (AC-6g, UI-2)
+| * 968f7d0 2026-11-19 feat(F06): AC-4 month chip and metrics panel from the month's summary
+| * 087c6e5 2026-11-19 test(F06): AC-4 AC-6d month chip and metrics panel on the monthly summary
+| * b276527 2026-11-19 feat(F06): AC-3 initials before every student's name, ✓ Paid / Unpaid, ruled students list
+| * a85e42d 2026-11-19 test(F06): AC-3 initials, worded status with tick, students list, single row rules
+| * 84b5b39 2026-11-19 refactor(F06): AC-2 lint fixes in the shell e2e; continuous row rules (no cell spacing)
+| * 8d9e184 2026-11-19 feat(F06): AC-2 dark sidebar shell with log out on every app page
+| * 8613d1b 2026-11-19 test(F06): AC-2 AC-6a,b shell with sidebar or top bar, log out on every app page
+| * ee70635 2026-11-19 feat(F06): AC-1 dashboard theme, Inter font, restyled shared components and design plan
+| * f461d36 2026-11-19 test(F06): AC-1 dashboard design plan, theme, rendered sizes and no manuscript identity
+|/  
+*   bce572d 2026-11-19 F05: Restyle remaining pages
+|\  
+| * 738b029 2026-11-19 fix(F05): UI-3 scroll margin of spacing 2 below table regions, so their bottom focus ring stays in view
+| * 3ba7140 2026-11-19 test(F05): reproduce UI-3 table region focus ring cut off at 375 x 667
+| * bdee6bf 2026-11-19 test(F05): CODE-3 unit tests for useWholeColumns with stubbed geometry, ResizeObserver and scrollTo
+| * 3d76aee 2026-11-18 fix(F05): UI-2 scroll margin of spacing 2 around focusable controls keeps the focus ring in view
+| * cb3e538 2026-11-18 test(F05): reproduce UI-2 focus ring cut off when a control is scrolled flush to the viewport edge
+| * afb1f82 2026-11-18 docs(F05): CLAUDE.md describes PaidButton's read cancelling and deferred refresh (CODE-2)
+| * f55ef43 2026-11-18 fix(F05): UX-2 tables rest on whole columns past the pinned Student column; caption stays in view
+| * 6cfe06c 2026-11-18 test(F05): reproduce UX-2 pinned Student column cuts the next column and the caption scrolls away
+| * 0291922 2026-11-18 fix(F05): CODE-2 mark/undo totals use the lesson as clicked; no list read is in flight during a mark or undo
+| * 3a7d648 2026-11-18 test(F05): reproduce CODE-2 for both read orders around the undo
+| * eeec248 2026-11-18 test(F05): reproduce CODE-2 undo totals wrong when the mark's refetch lands mid-undo
+| * f1eaf0c 2026-11-18 test(F05): e2e uses 4 workers and a 10 s expect timeout
+| * 17b02c7 2026-11-18 test(F05): seed once before the e2e run; sign-up spec uses its own teacher
+| * 2cdb01d 2026-11-18 test(F05): e2e seed retries when parallel spec files time out on the seed lock
+| * f30880a 2026-11-18 feat(F05): AC-1 design doc: rendered px at the 18 px root, breakpoints in px, page patterns, F05 screenshots
+| * ac50d2f 2026-11-18 test(F05): AC-1 design doc states rendered px at the 18 px root, breakpoints, page patterns and F05 screenshots; /login sizes unchanged
+| * c059dfc 2026-11-18 feat(F05): AC-6 month navigation keeps Previous and Next on one row down to 320 px; student list and totals within the measure
+| * cc1880d 2026-11-18 test(F05): AC-6 every app page in default, empty, many-items, field-error and load-error states: WCAG 2.2, widths, reflow, wide screen, touch, 200% text, landscape
+| * be36b9c 2026-11-18 test(F05): AC-4 existing axe checks use the WCAG 2.2 AA tags; AC-5 font and CSP checks cover every page
+| * 388a037 2026-11-18 feat(F05): AC-3 pinned Student column with a bar line, payment status in words with weight, spacing 0 for the table
+| * 07a7bb2 2026-11-18 test(F05): AC-3 ledger tables: structure, double rule, money, status text, totals, pinned Student column, width cap
+| * b7f22ff 2026-11-18 feat(F05): AC-2 restyle home, students, lessons, summary and pending with shared components; remove CSS module and tokens; parser to test support
+| * f50035d 2026-11-18 test(F05): AC-2 one stylesheet, theme names in every source file, pages built from shared components, parser with test support
+|/  
+*   53f2bf2 2026-11-18 F04: Visual identity and Tailwind foundation
+|\  
+| * 791df5a 2026-11-18 feat(F04): AC-6 larger note heads, F05 paragraph spacing kept; screenshots and agent notes
+| * e3ecc50 2026-11-18 test(F04): AC-6e hover cues have focus twins and no title-only information
+| * 7b3d4e5 2026-11-18 test(F04): AC-6 restyled parts: WCAG 2.2, widths, reflow, wide screen, touch, 200% text, landscape
+| * dce8cd9 2026-11-18 feat(F04): AC-5 self-host Alegreya and Alegreya Sans with their OFL licences
+| * fec8648 2026-11-18 test(F04): AC-5 self-hosted fonts load under the unchanged CSP
+| * 9495c1c 2026-11-18 feat(F04): AC-2 AC-3 Tailwind theme and shared components; restyle shell, login and sign-up
+| * 2a23de8 2026-11-18 test(F04): AC-3 shared components and pages built only from them
+| * 50ac96c 2026-11-18 test(F04): AC-2 Tailwind in the build and theme from docs/design.md
+| * eb3f4b3 2026-11-18 feat(F04): AC-1 visual identity plan in docs/design.md
+| * d5e0af5 2026-11-18 test(F04): AC-1 design plan sections in docs/design.md
+|/  
+*   4195438 2026-11-18 F03: Monthly summary and payments
+|\  
+| * 519d18c 2026-11-18 docs(F03): agent notes on the payments feature patterns
+| * 010a321 2026-11-18 fix(F03): AC-3 summary messages reset when the month changes
+| * 7a977b4 2026-11-18 test(F03): reproduce a mark-as-paid announcement staying on after changing month
+| * b55ef2a 2026-11-18 test(F03): non-functional p95 of the monthly summary and pending list for 5,000 lessons
+| * 4d2c495 2026-11-18 test(F03): AC-1..AC-6 end-to-end flows, accessibility and widths of /summary and /pending; F02 seed e2e follows the F03 seed
+| * fb48397 2026-11-18 feat(F03): AC-6 seed marks 1 of alice's current-month and 2 of her previous-month lessons paid; carol's lessons in the current month; README seed states for /summary and /pending
+| * 055fd23 2026-11-18 test(F03): AC-6 carol's unpaid lessons fall in the current month so /summary reaches Many items too
+| * cdebc81 2026-11-18 test(F03): AC-6 seed mixes paid and unpaid lessons for alice; load and mark/undo failures on /summary and /pending
+| * 1ed17c7 2026-11-18 test(F03): AC-5 isolation of summaries, month filter, pending list and PATCH; sessions required; invalid months (passes with AC-1..AC-3's implementation)
+| * 21d21f2 2026-11-18 test(F03): AC-4 idempotent PATCH, 422 for invalid bodies, 415 for non-JSON (passes with AC-3's implementation)
+| * 2b8408f 2026-11-18 feat(F03): AC-3 PATCH /api/lessons/{id} sets paid; mark as paid on /pending and /summary, undo on /summary, with announcements and focus
+| * 5edc842 2026-11-18 test(F03): AC-3 mark as paid and undo through PATCH /api/lessons/{id} on /pending and /summary
+| * 3215a76 2026-11-18 feat(F03): AC-2 pending lessons endpoint with amount pending and the pending payments page
+| * 6047265 2026-11-18 test(F03): AC-2 pending lessons API and pending payments page
+| * 769c310 2026-11-18 feat(F03): AC-1 monthly summary endpoint, month filter on lessons, summary page with month navigation; Main navigation gains the F03 pages
+| * 9ed4c5b 2026-11-18 test(F03): AC-1 monthly summary API, month filter and summary page with month navigation
+|/  
+*   baae4d0 2026-11-18 F02: Students and recording lessons
+|\  
+| * ce82bf4 2026-11-17 fix(F02): APR-1 seed carol with 510 students and 520 lessons to reach the Many items state
+| * d0878e9 2026-11-17 test(F02): reproduce APR-1 make seed does not reach the Many items state
+| * 1c86b0c 2026-11-17 fix(F02): UI-1 UI-2 lessons table scrolls inside a focusable region at narrow widths; dates and prices stay on one line
+| * 83d47fc 2026-11-17 test(F02): reproduce UI-1 lessons table overflows the page at 375px; UI-2 dates wrap
+| * 88309e2 2026-11-17 refactor(F02): shared failure helpers in the API client instead of the students page; agent notes on form patterns
+| * 349ed07 2026-11-17 fix(F02): AC-1 AC-2 accept the next submit while the list reloads after a success
+| * b3c8978 2026-11-17 fix(F02): AC-1 AC-2 accept the next submit while the list reloads after a success
+| * a67fbd3 2026-11-17 test(F02): AC-1..AC-6 end-to-end flows and accessibility; reproduce a dropped submit while the list reloads
+| * dcdae2b 2026-11-17 test(F02): non-functional p95 of listing 500 lessons on the local stack
+| * 43aea77 2026-11-17 feat(F02): AC-4 lessons page without students shows a link to add one instead of the form
+| * cbdd36f 2026-11-17 test(F02): AC-4 lessons page without students links to adding one
+| * b2b30f8 2026-11-17 feat(F02): AC-3 lesson form validation, server 422 as field messages, 404 and failure alerts
+| * 7ca9e24 2026-11-17 test(F02): AC-3 lesson form field errors, server 422 mapping, 404 and failure alerts
+| * 9303202 2026-11-17 feat(F02): AC-2 lessons page: record a lesson, newest-first table, en-US date and USD formats
+| * 9dfab90 2026-11-17 test(F02): AC-2 lessons page: form, recording, table order and display formats
+| * daebb95 2026-11-17 feat(F02): AC-1 students page, Main navigation, shared form errors, status and load-error UI
+| * 216f5e5 2026-11-17 test(F02): AC-1 students page: add form, ordered list, field errors, failures; Main navigation
+| * 75ba89c 2026-11-17 feat(F02): AC-6 seed resets alice to six students and twelve lessons over three months, bob empty
+| * 45e8e17 2026-11-17 test(F02): AC-6 seed gives alice six students and twelve lessons, bob nothing
+| * 3fd3ee8 2026-11-17 feat(F02): AC-5 default-deny authentication for every API route except the public allow-list
+| * c625215 2026-11-17 test(F02): AC-5 teacher isolation, identical 404s and default-deny over all routes
+| * 76e8adf 2026-11-17 feat(F02): AC-3 lesson field bounds: strict integers, ISO date in range, USD only
+| * 2c25cdf 2026-11-17 test(F02): AC-3 lesson field bounds rejected by the API and the database
+| * 1417501 2026-11-17 feat(F02): AC-2 lessons API: record an unpaid lesson, list newest first
+| * 7b18b1e 2026-11-17 test(F02): AC-2 record and list lessons through the API
+| * 54a813c 2026-11-17 feat(F02): AC-1 students API, student and lesson tables, shared pagination
+| * df8b515 2026-11-17 test(F02): AC-1 add and list students through the API
+|/  
+*   71b562e 2026-11-17 F01: Teacher accounts: sign up, log in, log out
+|\  
+| * 23a6634 2026-11-17 fix(F01): AC-6 seed upserts so parallel runs do not collide
+| * 2b94787 2026-11-17 test(F01): reproduce AC-6 concurrent make seed runs colliding on an empty table
+| * c1a24f3 2026-11-17 docs(F01): agent notes on authentication, JSON-only bodies, logging and frontend session
+| * 3e71897 2026-11-17 fix(F01): AC-3 Back after log out returns to /login; focus the new page's h1 on navigation
+| * d829396 2026-11-17 test(F01): AC-1..AC-5 end-to-end flows and WCAG 2.1 AA, keyboard and width checks
+| * 225cc53 2026-11-17 test(F01): AC-5 reload with valid or expired session (pass with the session gate)
+| * 3c72d3f 2026-11-17 feat(F01): AC-4 end the app session on any 401 not_authenticated
+| * ffca87a 2026-11-17 test(F01): AC-4 any 401 not_authenticated from any API call ends the session in the app
+| * bc03fa0 2026-11-17 feat(F01): AC-3 log out from home, discard cached data, failure alert
+| * 07b3746 2026-11-17 test(F01): AC-3 home page log out by keyboard, cache discarded, in-flight and failure states
+| * 4323946 2026-11-17 test(F01): AC-4 redirects, loading and session-check error states (pass with the AC-1 session gate)
+| * aca673c 2026-11-17 feat(F01): AC-2 login page with generic error, required fields and shared field-error focus
+| * c06b95c 2026-11-17 test(F01): AC-2 login page: success, generic error, required fields, submitting, failures
+| * 6e3b382 2026-11-17 feat(F01): AC-1 sign-up page, session gate, home with email, design tokens and API client
+| * 060adde 2026-11-17 test(F01): AC-1 sign-up page, client-side email and password rules, fake API for component tests
+| * ea90866 2026-11-17 test(F01): AC-1 AC-2 container logs of account requests hold no email or password
+| * 8e09db2 2026-11-17 feat(F01): AC-1 SESSION_COOKIE_SECURE in .env.example, README and compose
+| * 1c6add6 2026-11-17 test(F01): AC-1 SESSION_COOKIE_SECURE configuration is documented and passed to the backend
+| * 761f6ce 2026-11-17 feat(F01): AC-6 seed alice and bob idempotently and list credentials in README
+| * fbc0241 2026-11-17 test(F01): AC-6 idempotent seed of alice and bob with README credentials
+| * 8f176c0 2026-11-17 test(F01): AC-3 logout and AC-5 fixed 14-day expiry on the API (pass with the AC-4 endpoints)
+| * ddf49fd 2026-11-17 feat(F01): AC-4 session authentication dependency, current session and logout endpoints
+| * a1947ba 2026-11-17 test(F01): AC-4 current-session endpoints require a valid session
+| * 4f03fb6 2026-11-17 feat(F01): AC-2 login API with generic invalid credentials and constant-work password check
+| * cb90393 2026-11-17 test(F01): AC-2 login API, generic invalid credentials, comparable timing, fresh session
+| * d7039c8 2026-11-17 feat(F01): AC-1 sign-up API with teacher and session tables, Argon2id, session cookie
+| * 9d1cea6 2026-11-17 test(F01): AC-1 sign-up API, email and password rules, duplicate email, JSON only, no PII in logs
+|/  
+*   46bd558 2026-11-17 F00: Project base
+|\  
+| * a7b454b 2026-11-17 test(F00): APR-1 AC-6 acceptance check of make lint, make check output and injected faults
+| * b390a01 2026-11-17 test(F00): APR-1 AC-6 stage wrapper prints one line on success, stage and output on failure
+| * 4a174ca 2026-11-17 test(F00): APR-2 pin ADR-001..004 content to the plan's SHA-256 digests
+| * b835930 2026-11-17 docs(F00): document scan thresholds and loopback-only ports
+| * c1f1e0e 2026-11-17 fix(F00): SEC-2 fail the scan on high runtime npm advisories
+| * 2a589d3 2026-11-17 fix(F00): SEC-3 hide bound parameters in SQLAlchemy errors
+| * 1dde25d 2026-11-17 fix(F00): SEC-1 publish db, backend and frontend ports on 127.0.0.1 only
+| * dcac059 2026-11-17 test(F00): SEC-3 use an error PostgreSQL does not echo the value in; lint fixes
+| * c7aa538 2026-11-17 test(F00): reproduce SEC-1 ports published on all interfaces and SEC-3 logged query parameters
+| * ddfc3e5 2026-11-17 fix(F00): make up refuses host ports another process already listens on
+| * f893de9 2026-11-17 test(F00): AC-2 make up must fail naming the service when its host port is taken
+| * 8146daa 2026-11-17 feat(F00): project base with health API, SPA shell, compose stack and make targets
+| * 3dc32ea 2026-11-17 test(F00): hidden docs endpoints, lint and type fixes in tests, httpx2 client
+| * 406e5a6 2026-11-17 test(F00): AC-1..AC-6 failing tests for the project base
+| * a4525b1 2026-11-17 chore(F00): backend and frontend toolchains and test harness
+|/  
+* e87df94 2026-11-17 Initial commit
